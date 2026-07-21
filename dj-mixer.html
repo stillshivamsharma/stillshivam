@@ -153,43 +153,7 @@
             border: none;
         }
 
-        .related-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 0.3rem;
-        }
-        .related-scroll {
-            display: flex;
-            gap: 0.8rem;
-            overflow-x: auto;
-            padding-bottom: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .related-item {
-            flex: 0 0 auto;
-            width: 100px;
-            cursor: pointer;
-            border-radius: 12px;
-            overflow: hidden;
-            background: rgba(255,245,248,0.6);
-            border: 1px solid transparent;
-            transition: 0.2s;
-            text-align: center;
-        }
-        .related-item:hover { border-color: var(--accent); background: rgba(255,210,225,0.6); }
-        .related-item img { width: 100%; height: 56px; object-fit: cover; }
-        .related-item .rel-title {
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: var(--text);
-            padding: 0.3rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
+        /* ========== CONTROLS ========== */
         .controls-section {
             display: flex;
             flex-direction: column;
@@ -197,24 +161,27 @@
             background: rgba(255,240,245,0.5);
             border-radius: 32px;
             padding: 1.5rem;
-            margin-bottom: 2rem;
         }
+
         .volume-mute-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
+            flex-wrap: wrap;
         }
         .vol-group {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
+            gap: 0.6rem;
             flex: 1;
+            min-width: 180px;
         }
         .vol-group label {
             font-weight: 600;
             color: var(--text-soft);
-            min-width: 70px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
         .vol-group input[type="range"] {
             flex: 1;
@@ -223,34 +190,41 @@
         .vol-group .slider-value {
             font-weight: 600;
             color: #4d2c3b;
-            min-width: 40px;
+            min-width: 45px;
             text-align: right;
+            font-size: 0.85rem;
         }
         .mute-btn {
             background: rgba(255,220,230,0.5);
             border: 1px solid rgba(220,150,170,0.5);
             border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 1.5rem;
+            width: 42px;
+            height: 42px;
+            font-size: 1.3rem;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
+            flex-shrink: 0;
         }
         .mute-btn.muted {
             background: rgba(200,150,150,0.5);
             border-color: #c44;
         }
 
+        /* Crossfader */
         .crossfader-section {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        .crossfader-section span { font-weight: 600; color: var(--text-soft); }
+        .crossfader-section span {
+            font-weight: 600;
+            color: var(--text-soft);
+            font-size: 0.9rem;
+        }
         .crossfader-section input[type="range"] {
             flex: 1;
             accent-color: var(--accent);
@@ -258,7 +232,9 @@
         .crossfader-section .fade-label {
             font-weight: 600;
             color: #4d2c3b;
-            min-width: 70px;
+            min-width: 80px;
+            text-align: center;
+            font-size: 0.9rem;
         }
 
         .back-link {
@@ -276,7 +252,8 @@
 
         @media (max-width: 800px) {
             .decks { grid-template-columns: 1fr; }
-            .volume-mute-row { flex-direction: column; }
+            .volume-mute-row { flex-direction: column; align-items: stretch; }
+            .vol-group { min-width: auto; }
             .glass-card { padding: 1.5rem; }
             h1 { font-size: 2.2rem; }
         }
@@ -286,12 +263,12 @@
 
     <div class="glass-card">
         <h1>🎧 DJ Mixer Pro</h1>
-        <p class="subtitle">Search YouTube, load two tracks, crossfade &amp; mute with smooth blends.</p>
+        <p class="subtitle">Search YouTube, load two tracks, crossfade &amp; mute.</p>
 
         <!-- Decks -->
         <div class="decks">
             <!-- Deck A -->
-            <div class="deck" id="deckA">
+            <div class="deck">
                 <h3>🎵 Track A</h3>
                 <div class="search-box">
                     <input type="text" id="searchA" placeholder="Search..." onkeydown="if(event.key==='Enter') search('A')">
@@ -299,12 +276,10 @@
                 </div>
                 <div class="search-results" id="resultsA"></div>
                 <div class="player-wrapper" id="playerA"></div>
-                <div class="related-label">🔗 Related</div>
-                <div class="related-scroll" id="relatedA"></div>
             </div>
 
             <!-- Deck B -->
-            <div class="deck" id="deckB">
+            <div class="deck">
                 <h3>🎵 Track B</h3>
                 <div class="search-box">
                     <input type="text" id="searchB" placeholder="Search..." onkeydown="if(event.key==='Enter') search('B')">
@@ -312,8 +287,6 @@
                 </div>
                 <div class="search-results" id="resultsB"></div>
                 <div class="player-wrapper" id="playerB"></div>
-                <div class="related-label">🔗 Related</div>
-                <div class="related-scroll" id="relatedB"></div>
             </div>
         </div>
 
@@ -327,6 +300,7 @@
                     <span class="slider-value" id="volAVal">100%</span>
                 </div>
                 <button class="mute-btn" id="muteABtn" onclick="toggleMute('A')">🔊</button>
+
                 <div class="vol-group">
                     <label>🔊 Vol B</label>
                     <input type="range" id="volB" min="0" max="100" value="100" oninput="updateAllVolumes()">
@@ -351,7 +325,6 @@
         let players = { A: null, B: null };
         let currentVideo = { A: null, B: null };
         let muted = { A: false, B: false };
-        let prevVolume = { A: 100, B: 100 }; // before mute
 
         function onYouTubeIframeAPIReady() {
             players.A = new YT.Player('playerA', {
@@ -378,19 +351,21 @@
             updateAllVolumes();
         }
 
-        // DJ-style crossfade: center = both full; left = A full, B off; right = B full, A off
+        // Fresh Crossfade Logic:
+        // Leftmost = Only A (full), Rightmost = Only B (full), Center = Both Full
         function calculateCrossfadeVolumes() {
             const volA = parseInt(document.getElementById('volA').value) || 100;
             const volB = parseInt(document.getElementById('volB').value) || 100;
             const cross = parseInt(document.getElementById('crossfader').value) || 50;
 
             let leftGain, rightGain;
+
             if (cross <= 50) {
-                // left side: A full volume, B fades in
+                // Left side: A full, B fades from 0 to full
                 leftGain = 1;
-                rightGain = cross / 50; // 0 at 0, 1 at 50
+                rightGain = cross / 50;
             } else {
-                // right side: B full volume, A fades out
+                // Right side: B full, A fades from full to 0
                 leftGain = 1 - (cross - 50) / 50;
                 rightGain = 1;
             }
@@ -404,7 +379,6 @@
         function updateAllVolumes() {
             const { effectiveA, effectiveB, cross } = calculateCrossfadeVolumes();
 
-            // Apply mute overrides
             const finalA = muted.A ? 0 : effectiveA;
             const finalB = muted.B ? 0 : effectiveB;
 
@@ -415,15 +389,16 @@
             document.getElementById('volAVal').textContent = muted.A ? 'MUTED' : (document.getElementById('volA').value + '%');
             document.getElementById('volBVal').textContent = muted.B ? 'MUTED' : (document.getElementById('volB').value + '%');
 
+            // Friendly label
             const fadeLabel = document.getElementById('fadeLabel');
-            if (cross <= 5) fadeLabel.textContent = 'Track A Only';
-            else if (cross >= 95) fadeLabel.textContent = 'Track B Only';
-            else if (cross >= 45 && cross <= 55) fadeLabel.textContent = 'Both Full';
-            else if (cross < 50) fadeLabel.textContent = `A > B (${cross}%)`;
-            else fadeLabel.textContent = `B > A (${cross}%)`;
+            if (cross <= 3) fadeLabel.textContent = 'Track A Only';
+            else if (cross >= 97) fadeLabel.textContent = 'Track B Only';
+            else if (cross >= 47 && cross <= 53) fadeLabel.textContent = 'Both Full';
+            else if (cross < 50) fadeLabel.textContent = 'A > B';
+            else fadeLabel.textContent = 'B > A';
         }
 
-        // search functions unchanged but adjust auto-select behavior removed
+        // Search
         async function search(side) {
             const query = document.getElementById('search' + side).value.trim();
             if (!query) return;
@@ -460,7 +435,7 @@
                     </div>
                 `;
                 item.onclick = () => {
-                    loadVideo(side, video.id, video.title);
+                    loadVideo(side, video.id);
                     container.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
                     item.classList.add('active');
                 };
@@ -468,43 +443,12 @@
             });
         }
 
-        function loadVideo(side, videoId, title) {
+        function loadVideo(side, videoId) {
             currentVideo[side] = videoId;
             if (players[side] && players[side].loadVideoById) {
                 players[side].loadVideoById(videoId);
             }
             document.getElementById('results' + side).style.display = 'none';
-            fetchRelated(side, videoId);
-        }
-
-        async function fetchRelated(side, videoId) {
-            const relatedDiv = document.getElementById('related' + side);
-            relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Loading...</div></div>';
-            try {
-                const res = await fetch(`/api/yt-search?action=related&relatedTo=${videoId}&maxResults=8`);
-                const data = await res.json();
-                if (data.error || !data.videos || data.videos.length === 0) {
-                    relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">No related videos</div></div>';
-                    return;
-                }
-                renderRelated(data.videos, relatedDiv, side);
-            } catch (e) {
-                relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Failed to load</div></div>';
-            }
-        }
-
-        function renderRelated(videos, container, side) {
-            container.innerHTML = '';
-            videos.forEach(video => {
-                const rel = document.createElement('div');
-                rel.className = 'related-item';
-                rel.innerHTML = `
-                    <img src="${video.thumbnail}" alt="">
-                    <div class="rel-title">${video.title}</div>
-                `;
-                rel.onclick = () => loadVideo(side, video.id, video.title);
-                container.appendChild(rel);
-            });
         }
 
         window.addEventListener('load', () => updateAllVolumes());
