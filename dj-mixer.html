@@ -144,8 +144,8 @@
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 0.8rem;
-            background: #000; /* placeholder while loading */
-            min-height: 0; /* prevent flex blowout */
+            background: #000;
+            min-height: 0;
         }
         .player-wrapper iframe {
             width: 100%;
@@ -190,111 +190,76 @@
             text-overflow: ellipsis;
         }
 
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .controls-section {
+            display: flex;
+            flex-direction: column;
             gap: 1.5rem;
             background: rgba(255,240,245,0.5);
             border-radius: 32px;
             padding: 1.5rem;
             margin-bottom: 2rem;
         }
-        .control-panel {
+        .volume-mute-row {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             gap: 1rem;
         }
-        .slider-group label {
-            display: block;
+        .vol-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex: 1;
+        }
+        .vol-group label {
             font-weight: 600;
             color: var(--text-soft);
-            margin-bottom: 0.3rem;
-            font-size: 0.85rem;
+            min-width: 70px;
         }
-        .slider-group input[type="range"] {
-            width: 100%;
+        .vol-group input[type="range"] {
+            flex: 1;
             accent-color: var(--accent);
         }
-        .slider-value {
+        .vol-group .slider-value {
             font-weight: 600;
             color: #4d2c3b;
+            min-width: 40px;
             text-align: right;
-            margin-top: 0.1rem;
+        }
+        .mute-btn {
+            background: rgba(255,220,230,0.5);
+            border: 1px solid rgba(220,150,170,0.5);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .mute-btn.muted {
+            background: rgba(200,150,150,0.5);
+            border-color: #c44;
         }
 
         .crossfader-section {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin: 1rem 0;
         }
         .crossfader-section span { font-weight: 600; color: var(--text-soft); }
         .crossfader-section input[type="range"] {
             flex: 1;
             accent-color: var(--accent);
         }
-
-        .eq-section {
-            background: rgba(255,235,240,0.5);
-            border-radius: 20px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        .eq-sliders {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-        }
-        .eq-slider label {
-            font-size: 0.75rem;
+        .crossfader-section .fade-label {
             font-weight: 600;
-            color: var(--text-soft);
+            color: #4d2c3b;
+            min-width: 70px;
         }
-        .eq-slider input {
-            width: 60px;
-            -webkit-appearance: slider-vertical;
-            writing-mode: bt-lr;
-            accent-color: #d4889b;
-        }
-
-        .visualizer {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 4px;
-            height: 40px;
-            margin-top: 0.8rem;
-        }
-        .bar {
-            width: 8px;
-            background: linear-gradient(180deg, #f8b0c2, #e0899e);
-            border-radius: 4px;
-            transition: height 0.1s ease;
-            height: 5px;
-        }
-        .visualizer.playing .bar {
-            animation: bounce 0.8s ease-in-out infinite alternate;
-        }
-        .visualizer.playing .bar:nth-child(1) { animation-delay: 0s; }
-        .visualizer.playing .bar:nth-child(2) { animation-delay: 0.1s; }
-        .visualizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
-        .visualizer.playing .bar:nth-child(4) { animation-delay: 0.3s; }
-        .visualizer.playing .bar:nth-child(5) { animation-delay: 0.4s; }
-        .visualizer.playing .bar:nth-child(6) { animation-delay: 0.5s; }
-
-        @keyframes bounce {
-            0% { height: 5px; }
-            100% { height: 35px; }
-        }
-
-        .master-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        .master-row label { font-weight: 600; color: var(--text-soft); }
-        .master-row input { flex: 1; accent-color: var(--accent); }
 
         .back-link {
             display: inline-block;
@@ -311,8 +276,7 @@
 
         @media (max-width: 800px) {
             .decks { grid-template-columns: 1fr; }
-            .controls-grid { grid-template-columns: 1fr; }
-            .eq-sliders { flex-wrap: wrap; }
+            .volume-mute-row { flex-direction: column; }
             .glass-card { padding: 1.5rem; }
             h1 { font-size: 2.2rem; }
         }
@@ -322,7 +286,7 @@
 
     <div class="glass-card">
         <h1>🎧 DJ Mixer Pro</h1>
-        <p class="subtitle">Search YouTube, load two tracks, crossfade &amp; mix with visual equalizer.</p>
+        <p class="subtitle">Search YouTube, load two tracks, crossfade &amp; mute with smooth blends.</p>
 
         <!-- Decks -->
         <div class="decks">
@@ -354,88 +318,112 @@
         </div>
 
         <!-- Controls -->
-        <div class="controls-grid">
-            <div class="control-panel">
-                <div class="slider-group">
-                    <label>🔊 Volume A</label>
-                    <input type="range" id="volA" min="0" max="100" value="80" oninput="updateAllVolumes()">
-                    <div class="slider-value" id="volAVal">80%</div>
+        <div class="controls-section">
+            <!-- Volume + Mute Row -->
+            <div class="volume-mute-row">
+                <div class="vol-group">
+                    <label>🔊 Vol A</label>
+                    <input type="range" id="volA" min="0" max="100" value="100" oninput="updateAllVolumes()">
+                    <span class="slider-value" id="volAVal">100%</span>
                 </div>
-            </div>
-            <div class="control-panel">
-                <div class="slider-group">
-                    <label>🔊 Volume B</label>
-                    <input type="range" id="volB" min="0" max="100" value="80" oninput="updateAllVolumes()">
-                    <div class="slider-value" id="volBVal">80%</div>
+                <button class="mute-btn" id="muteABtn" onclick="toggleMute('A')">🔊</button>
+                <div class="vol-group">
+                    <label>🔊 Vol B</label>
+                    <input type="range" id="volB" min="0" max="100" value="100" oninput="updateAllVolumes()">
+                    <span class="slider-value" id="volBVal">100%</span>
                 </div>
+                <button class="mute-btn" id="muteBBtn" onclick="toggleMute('B')">🔊</button>
             </div>
-        </div>
 
-        <!-- Crossfader -->
-        <div class="crossfader-section">
-            <span>◀ A</span>
-            <input type="range" id="crossfader" min="0" max="100" value="50" oninput="updateAllVolumes()">
-            <span>B ▶</span>
-            <div style="font-weight:600; color:#4d2c3b;" id="fadeLabel">Center</div>
-        </div>
-
-        <!-- Master -->
-        <div class="master-row">
-            <label>🎛️ Master</label>
-            <input type="range" id="masterVol" min="0" max="100" value="90" oninput="updateAllVolumes()">
-            <div class="slider-value" id="masterVal">90%</div>
-        </div>
-
-        <!-- Visual Equalizer -->
-        <div class="eq-section">
-            <h4 style="text-align:center; margin-bottom:0.5rem; color:#4d2c3b;">🎚️ Equalizer (Visual)</h4>
-            <div class="eq-sliders">
-                <div class="eq-slider"><label>Bass</label><input type="range" min="0" max="100" value="50"></div>
-                <div class="eq-slider"><label>Mid</label><input type="range" min="0" max="100" value="50"></div>
-                <div class="eq-slider"><label>Treble</label><input type="range" min="0" max="100" value="50"></div>
-            </div>
-            <div class="visualizer" id="visualizer">
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <!-- Crossfader -->
+            <div class="crossfader-section">
+                <span>◀ A</span>
+                <input type="range" id="crossfader" min="0" max="100" value="50" oninput="updateAllVolumes()">
+                <span>B ▶</span>
+                <span class="fade-label" id="fadeLabel">Center</span>
             </div>
         </div>
     </div>
 
     <a href="portfolio.html" class="back-link">← back to portfolio</a>
 
-    <!-- FIXED: Define onYouTubeIframeAPIReady BEFORE loading iframe API -->
     <script>
         let players = { A: null, B: null };
         let currentVideo = { A: null, B: null };
-        let isPlaying = { A: false, B: false };
+        let muted = { A: false, B: false };
+        let prevVolume = { A: 100, B: 100 }; // before mute
 
         function onYouTubeIframeAPIReady() {
             players.A = new YT.Player('playerA', {
                 height: '100%', width: '100%',
-                playerVars: { 'controls': 1, 'autoplay': 0 },
-                events: { 'onStateChange': (e) => handleStateChange('A', e.data) }
+                playerVars: { 'controls': 1, 'autoplay': 0 }
             });
             players.B = new YT.Player('playerB', {
                 height: '100%', width: '100%',
-                playerVars: { 'controls': 1, 'autoplay': 0 },
-                events: { 'onStateChange': (e) => handleStateChange('B', e.data) }
+                playerVars: { 'controls': 1, 'autoplay': 0 }
             });
-            // Initial volume set after players ready
             setTimeout(() => updateAllVolumes(), 500);
         }
 
-        function handleStateChange(side, state) {
-            isPlaying[side] = (state === 1);
-            updateVisualizer();
+        function toggleMute(side) {
+            muted[side] = !muted[side];
+            const btn = document.getElementById('mute' + side + 'Btn');
+            if (muted[side]) {
+                btn.textContent = '🔇';
+                btn.classList.add('muted');
+            } else {
+                btn.textContent = '🔊';
+                btn.classList.remove('muted');
+            }
+            updateAllVolumes();
         }
 
-        function updateVisualizer() {
-            const viz = document.getElementById('visualizer');
-            if (isPlaying.A || isPlaying.B) viz.classList.add('playing');
-            else viz.classList.remove('playing');
+        // DJ-style crossfade: center = both full; left = A full, B off; right = B full, A off
+        function calculateCrossfadeVolumes() {
+            const volA = parseInt(document.getElementById('volA').value) || 100;
+            const volB = parseInt(document.getElementById('volB').value) || 100;
+            const cross = parseInt(document.getElementById('crossfader').value) || 50;
+
+            let leftGain, rightGain;
+            if (cross <= 50) {
+                // left side: A full volume, B fades in
+                leftGain = 1;
+                rightGain = cross / 50; // 0 at 0, 1 at 50
+            } else {
+                // right side: B full volume, A fades out
+                leftGain = 1 - (cross - 50) / 50;
+                rightGain = 1;
+            }
+
+            const effectiveA = volA * leftGain;
+            const effectiveB = volB * rightGain;
+
+            return { effectiveA, effectiveB, cross };
         }
 
-        // Search function
+        function updateAllVolumes() {
+            const { effectiveA, effectiveB, cross } = calculateCrossfadeVolumes();
+
+            // Apply mute overrides
+            const finalA = muted.A ? 0 : effectiveA;
+            const finalB = muted.B ? 0 : effectiveB;
+
+            if (players.A && typeof players.A.setVolume === 'function') players.A.setVolume(finalA);
+            if (players.B && typeof players.B.setVolume === 'function') players.B.setVolume(finalB);
+
+            // Update displays
+            document.getElementById('volAVal').textContent = muted.A ? 'MUTED' : (document.getElementById('volA').value + '%');
+            document.getElementById('volBVal').textContent = muted.B ? 'MUTED' : (document.getElementById('volB').value + '%');
+
+            const fadeLabel = document.getElementById('fadeLabel');
+            if (cross <= 5) fadeLabel.textContent = 'Track A Only';
+            else if (cross >= 95) fadeLabel.textContent = 'Track B Only';
+            else if (cross >= 45 && cross <= 55) fadeLabel.textContent = 'Both Full';
+            else if (cross < 50) fadeLabel.textContent = `A > B (${cross}%)`;
+            else fadeLabel.textContent = `B > A (${cross}%)`;
+        }
+
+        // search functions unchanged but adjust auto-select behavior removed
         async function search(side) {
             const query = document.getElementById('search' + side).value.trim();
             if (!query) return;
@@ -447,6 +435,10 @@
                 const data = await res.json();
                 if (data.error) {
                     resultsDiv.innerHTML = `<div class="result-item"><div class="info"><div class="title">⚠️ ${data.error}</div></div></div>`;
+                    return;
+                }
+                if (!data.videos || data.videos.length === 0) {
+                    resultsDiv.innerHTML = '<div class="result-item"><div class="info"><div class="title">No results found</div></div></div>';
                     return;
                 }
                 renderResults(data.videos, resultsDiv, side);
@@ -474,7 +466,6 @@
                 };
                 container.appendChild(item);
             });
-            // Auto-select removed – user now clicks manually
         }
 
         function loadVideo(side, videoId, title) {
@@ -482,7 +473,6 @@
             if (players[side] && players[side].loadVideoById) {
                 players[side].loadVideoById(videoId);
             }
-            // Hide search results after selection
             document.getElementById('results' + side).style.display = 'none';
             fetchRelated(side, videoId);
         }
@@ -493,13 +483,13 @@
             try {
                 const res = await fetch(`/api/yt-search?action=related&relatedTo=${videoId}&maxResults=8`);
                 const data = await res.json();
-                if (data.error || !data.videos) {
-                    relatedDiv.innerHTML = '';
+                if (data.error || !data.videos || data.videos.length === 0) {
+                    relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">No related videos</div></div>';
                     return;
                 }
                 renderRelated(data.videos, relatedDiv, side);
             } catch (e) {
-                relatedDiv.innerHTML = '';
+                relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Failed to load</div></div>';
             }
         }
 
@@ -517,40 +507,9 @@
             });
         }
 
-        function updateAllVolumes() {
-            const volA = parseInt(document.getElementById('volA').value) || 80;
-            const volB = parseInt(document.getElementById('volB').value) || 80;
-            const cross = parseInt(document.getElementById('crossfader').value) || 50;
-            const master = parseInt(document.getElementById('masterVol').value) || 90;
-
-            const leftFactor = (100 - cross) / 100;
-            const rightFactor = cross / 100;
-
-            const effectiveA = Math.round(volA * leftFactor * master / 100);
-            const effectiveB = Math.round(volB * rightFactor * master / 100);
-
-            // Set volumes (with null safety)
-            if (players.A && typeof players.A.setVolume === 'function') players.A.setVolume(effectiveA);
-            if (players.B && typeof players.B.setVolume === 'function') players.B.setVolume(effectiveB);
-
-            // Update displays: show original slider value, not effective
-            document.getElementById('volAVal').textContent = volA + '%';
-            document.getElementById('volBVal').textContent = volB + '%';
-            document.getElementById('masterVal').textContent = master + '%';
-
-            const fadeLabel = document.getElementById('fadeLabel');
-            if (cross < 30) fadeLabel.textContent = 'Track A ⬆️';
-            else if (cross > 70) fadeLabel.textContent = 'Track B ⬆️';
-            else fadeLabel.textContent = 'Center';
-        }
-
-        // Safety: call once after full page load too
-        window.addEventListener('load', () => {
-            updateAllVolumes();
-        });
+        window.addEventListener('load', () => updateAllVolumes());
     </script>
 
-    <!-- Now load YouTube IFrame API (after defining callback) -->
     <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
