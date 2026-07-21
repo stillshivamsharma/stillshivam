@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shivam · DJ Mixer</title>
+    <title>Shivam · DJ Mixer Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --text:#3a2330;
-            --text-soft:#5d4155;
-            --text-muted:#9b7b8a;
-            --card-bg:rgba(255,245,250,0.55);
-            --card-border:rgba(255,220,230,0.6);
-            --font-serif:'Cormorant Garamond',serif;
-            --font-sans:'Quicksand',sans-serif;
+            --text: #3a2330;
+            --text-soft: #5d4155;
+            --text-muted: #9b7b8a;
+            --card-bg: rgba(255,245,250,0.55);
+            --card-border: rgba(255,220,230,0.6);
+            --font-serif: 'Cormorant Garamond', serif;
+            --font-sans: 'Quicksand', sans-serif;
+            --accent: #e894a8;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family:var(--font-sans);
-            background: radial-gradient(ellipse at 30% 40%,#ffeef4,#f3e2f0,#e1dff8,#dcedf8);
-            min-height:100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: var(--font-sans);
+            background: radial-gradient(ellipse at 30% 40%, #ffeef4, #f3e2f0, #e1dff8, #dcedf8);
+            min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
         }
+
         .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -36,14 +40,16 @@
             box-shadow: 0 20px 40px rgba(200,130,150,0.1);
             padding: 2.5rem;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1300px;
+            margin-bottom: 2rem;
         }
+
         h1 {
             font-family: var(--font-serif);
             font-size: 2.8rem;
             text-align: center;
-            color:#4d2c3b;
-            margin-bottom: 0.4rem;
+            color: #4d2c3b;
+            margin-bottom: 0.3rem;
         }
         .subtitle {
             text-align: center;
@@ -52,13 +58,15 @@
             font-size: 1rem;
         }
 
-        .players-grid {
+        /* Decks Grid */
+        .decks {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 2rem;
             margin-bottom: 2rem;
         }
-        .player-card {
+
+        .deck {
             background: rgba(255,245,248,0.5);
             border: 1px solid rgba(255,220,230,0.6);
             border-radius: 32px;
@@ -66,22 +74,24 @@
             display: flex;
             flex-direction: column;
         }
-        .player-card h3 {
+
+        .deck h3 {
             font-family: var(--font-serif);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: #4d2c3b;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
 
+        /* Search */
         .search-box {
             position: relative;
             display: flex;
             gap: 0.5rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
         .search-box input {
             flex: 1;
-            padding: 10px 16px;
+            padding: 12px 16px;
             border-radius: 30px;
             border: 1px solid rgba(220,150,170,0.4);
             background: rgba(255,245,248,0.7);
@@ -90,11 +100,11 @@
             outline: none;
         }
         .search-box input:focus {
-            border-color: #e894a8;
+            border-color: var(--accent);
             box-shadow: 0 0 0 4px rgba(230,130,155,.1);
         }
         .btn-sm {
-            padding: 10px 18px;
+            padding: 12px 18px;
             border-radius: 30px;
             border: none;
             background: linear-gradient(145deg,#fad1dd,#f7bacb);
@@ -106,133 +116,202 @@
             transition: 0.3s;
             white-space: nowrap;
         }
-        .btn-sm:hover {
-            background: linear-gradient(145deg,#fadce6,#f8c0d2);
-        }
-        .suggestions-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 70px;
-            background: rgba(255,250,252,0.98);
-            border: 1px solid rgba(220,150,170,0.4);
-            border-radius: 16px;
-            max-height: 180px;
-            overflow-y: auto;
-            z-index: 50;
-            margin-top: 4px;
-            display: none;
-        }
-        .suggestion-item {
-            padding: 8px 14px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            color: var(--text-soft);
-            border-bottom: 1px solid rgba(220,150,170,0.1);
-        }
-        .suggestion-item:hover {
-            background: rgba(255,210,225,0.5);
-        }
+        .btn-sm:hover { background: linear-gradient(145deg,#fadce6,#f8c0d2); }
 
-        .player-card iframe {
-            width: 100%;
-            aspect-ratio: 16/9;
-            border-radius: 16px;
-            border: none;
-        }
-        .video-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            max-height: 180px;
+        /* Search Results Dropdown (now block that pushes content) */
+        .search-results {
+            max-height: 300px;
             overflow-y: auto;
-            margin-top: 0.8rem;
+            background: rgba(255,250,252,0.9);
+            border: 1px solid rgba(220,150,170,0.3);
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            display: none;
+            padding: 0.5rem;
         }
-        .video-item {
+        .result-item {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
-            padding: 0.5rem;
-            border-radius: 14px;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            border-radius: 12px;
             cursor: pointer;
-            background: rgba(255,245,248,0.5);
             transition: 0.2s;
         }
-        .video-item:hover {
-            background: rgba(255,210,225,0.6);
+        .result-item:hover { background: rgba(255,210,225,0.5); }
+        .result-item.active { background: rgba(255,180,200,0.4); border: 1px solid var(--accent); }
+        .result-item img { width: 72px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .result-item .info { flex: 1; min-width: 0; }
+        .result-item .title { font-size: 0.9rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .result-item .channel { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Player container */
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
         }
-        .video-item.active {
-            background: rgba(255,180,200,0.5);
-            border: 1px solid #e894a8;
+        .player-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
-        .video-item img {
-            width: 64px;
-            height: 36px;
-            border-radius: 8px;
-            object-fit: cover;
+
+        /* Related videos (horizontal scroll) */
+        .related-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
         }
-        .video-item .info {
-            flex: 1;
-            min-width: 0;
+        .related-scroll {
+            display: flex;
+            gap: 0.8rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-        .video-item .title {
-            font-size: 0.8rem;
+        .related-item {
+            flex: 0 0 auto;
+            width: 100px;
+            cursor: pointer;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255,245,248,0.6);
+            border: 1px solid transparent;
+            transition: 0.2s;
+            text-align: center;
+        }
+        .related-item:hover { border-color: var(--accent); background: rgba(255,210,225,0.6); }
+        .related-item img { width: 100%; height: 56px; object-fit: cover; }
+        .related-item .rel-title {
+            font-size: 0.7rem;
             font-weight: 500;
             color: var(--text);
+            padding: 0.3rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .video-item .channel {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        .section-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            margin: 0.6rem 0 0.2rem;
+
+        /* Controls */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            background: rgba(255,240,245,0.5);
+            border-radius: 32px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .controls-row {
+        .control-panel {
             display: flex;
-            justify-content: space-around;
-            align-items: center;
+            flex-direction: column;
             gap: 1rem;
-            flex-wrap: wrap;
-            background: rgba(255,245,248,0.4);
-            border-radius: 32px;
-            padding: 1.5rem 1rem;
-            margin-top: 1rem;
         }
-        .control-group {
-            text-align: center;
-            flex: 1;
-            min-width: 100px;
-        }
-        .control-group label {
+
+        .slider-group label {
             display: block;
             font-weight: 600;
             color: var(--text-soft);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
             font-size: 0.85rem;
         }
-        .control-group input[type="range"] {
+        .slider-group input[type="range"] {
             width: 100%;
-            accent-color: #e894a8;
+            accent-color: var(--accent);
         }
-        .control-value {
+        .slider-value {
             font-weight: 600;
             color: #4d2c3b;
-            margin-top: 0.3rem;
+            text-align: right;
+            margin-top: 0.1rem;
         }
 
-        .back-link {
-            display: block;
-            text-align: center;
+        .crossfader-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .crossfader-section span { font-weight: 600; color: var(--text-soft); }
+        .crossfader-section input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent);
+        }
+
+        /* Equalizer (visual) */
+        .eq-section {
+            background: rgba(255,235,240,0.5);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        .eq-sliders {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+        .eq-slider label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-soft);
+        }
+        .eq-slider input {
+            width: 60px;
+            -webkit-appearance: slider-vertical;
+            writing-mode: bt-lr;
+            accent-color: #d4889b;
+        }
+
+        /* Animated Visualizer */
+        .visualizer {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 4px;
+            height: 40px;
+            margin-top: 0.8rem;
+        }
+        .bar {
+            width: 8px;
+            background: linear-gradient(180deg, #f8b0c2, #e0899e);
+            border-radius: 4px;
+            transition: height 0.1s ease;
+            height: 5px;
+        }
+        .visualizer.playing .bar {
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+        .visualizer.playing .bar:nth-child(1) { animation-delay: 0s; }
+        .visualizer.playing .bar:nth-child(2) { animation-delay: 0.1s; }
+        .visualizer.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+        .visualizer.playing .bar:nth-child(4) { animation-delay: 0.3s; }
+        .visualizer.playing .bar:nth-child(5) { animation-delay: 0.4s; }
+        .visualizer.playing .bar:nth-child(6) { animation-delay: 0.5s; }
+
+        @keyframes bounce {
+            0% { height: 5px; }
+            100% { height: 30px; }
+        }
+
+        .master-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             margin-top: 1.5rem;
+        }
+        .master-row label { font-weight: 600; color: var(--text-soft); }
+        .master-row input { flex: 1; accent-color: var(--accent); }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
             color: var(--text-soft);
             text-decoration: none;
             font-size: 0.9rem;
@@ -241,24 +320,14 @@
             background: rgba(255,220,230,.3);
             transition: 0.3s;
         }
-        .back-link:hover {
-            background: rgba(255,190,205,.5);
-            color: #4d2c3b;
-        }
+        .back-link:hover { background: rgba(255,190,205,.5); color: #4d2c3b; }
 
         @media (max-width: 800px) {
-            .players-grid {
-                grid-template-columns: 1fr;
-            }
-            .controls-row {
-                flex-direction: column;
-            }
-            .glass-card {
-                padding: 1.5rem;
-            }
-            h1 {
-                font-size: 2rem;
-            }
+            .decks { grid-template-columns: 1fr; }
+            .controls-grid { grid-template-columns: 1fr; }
+            .eq-sliders { flex-wrap: wrap; }
+            .glass-card { padding: 1.5rem; }
+            h1 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -266,60 +335,93 @@
 
     <div class="glass-card">
         <h1>🎧 DJ Mixer Pro</h1>
-        <p class="subtitle">Search YouTube, load two tracks, crossfade between them.</p>
+        <p class="subtitle">Search YouTube, load two tracks, crossfade &amp; mix with visual equalizer.</p>
 
-        <div class="players-grid">
-            <div class="player-card">
+        <!-- Decks -->
+        <div class="decks">
+            <!-- Deck A -->
+            <div class="deck" id="deckA">
                 <h3>🎵 Track A</h3>
                 <div class="search-box">
-                    <input type="text" id="searchA" placeholder="Search for Track A..." autocomplete="off"
-                           oninput="autocomplete('A')" onkeydown="if(event.key==='Enter')search('A')">
+                    <input type="text" id="searchA" placeholder="Search..." onkeydown="if(event.key==='Enter') search('A')">
                     <button class="btn-sm" onclick="search('A')">🔍</button>
-                    <div class="suggestions-dropdown" id="suggestionsA"></div>
                 </div>
-                <div id="leftPlayer"></div>
-                <div class="section-label">🔍 Results</div>
-                <div class="video-list" id="resultsA"></div>
-                <div class="section-label">🔗 Related</div>
-                <div class="video-list" id="relatedA"></div>
+                <div class="search-results" id="resultsA"></div>
+                <div class="player-wrapper" id="playerA"></div>
+                <div class="related-label">🔗 Related</div>
+                <div class="related-scroll" id="relatedA"></div>
             </div>
 
-            <div class="player-card">
+            <!-- Deck B -->
+            <div class="deck" id="deckB">
                 <h3>🎵 Track B</h3>
                 <div class="search-box">
-                    <input type="text" id="searchB" placeholder="Search for Track B..." autocomplete="off"
-                           oninput="autocomplete('B')" onkeydown="if(event.key==='Enter')search('B')">
+                    <input type="text" id="searchB" placeholder="Search..." onkeydown="if(event.key==='Enter') search('B')">
                     <button class="btn-sm" onclick="search('B')">🔍</button>
-                    <div class="suggestions-dropdown" id="suggestionsB"></div>
                 </div>
-                <div id="rightPlayer"></div>
-                <div class="section-label">🔍 Results</div>
-                <div class="video-list" id="resultsB"></div>
-                <div class="section-label">🔗 Related</div>
-                <div class="video-list" id="relatedB"></div>
+                <div class="search-results" id="resultsB"></div>
+                <div class="player-wrapper" id="playerB"></div>
+                <div class="related-label">🔗 Related</div>
+                <div class="related-scroll" id="relatedB"></div>
             </div>
         </div>
 
-        <div class="controls-row">
-            <div class="control-group">
-                <label>🔊 Volume A</label>
-                <input type="range" id="leftVolume" min="0" max="100" value="100" oninput="updateVolume()">
-                <div class="control-value" id="leftVolDisplay">100%</div>
+        <!-- Controls -->
+        <div class="controls-grid">
+            <!-- Left controls -->
+            <div class="control-panel">
+                <div class="slider-group">
+                    <label>🔊 Volume A</label>
+                    <input type="range" id="volA" min="0" max="100" value="80" oninput="updateAllVolumes()">
+                    <div class="slider-value" id="volAVal">80%</div>
+                </div>
             </div>
-            <div class="control-group">
-                <label>🎚️ Crossfader</label>
-                <input type="range" id="crossfader" min="0" max="100" value="50" oninput="crossfade()">
-                <div class="control-value" id="fadeLabel">Center</div>
+            <!-- Right controls -->
+            <div class="control-panel">
+                <div class="slider-group">
+                    <label>🔊 Volume B</label>
+                    <input type="range" id="volB" min="0" max="100" value="80" oninput="updateAllVolumes()">
+                    <div class="slider-value" id="volBVal">80%</div>
+                </div>
             </div>
-            <div class="control-group">
-                <label>🔊 Volume B</label>
-                <input type="range" id="rightVolume" min="0" max="100" value="100" oninput="updateVolume()">
-                <div class="control-value" id="rightVolDisplay">100%</div>
+        </div>
+
+        <!-- Crossfader -->
+        <div class="crossfader-section">
+            <span>◀ A</span>
+            <input type="range" id="crossfader" min="0" max="100" value="50" oninput="updateAllVolumes()">
+            <span>B ▶</span>
+            <div style="font-weight:600; color:#4d2c3b;" id="fadeLabel">Center</div>
+        </div>
+
+        <!-- Master Volume -->
+        <div class="master-row">
+            <label>🎛️ Master</label>
+            <input type="range" id="masterVol" min="0" max="100" value="90" oninput="updateAllVolumes()">
+            <div class="slider-value" id="masterVal">90%</div>
+        </div>
+
+        <!-- Equalizer (Visual) -->
+        <div class="eq-section">
+            <h4 style="text-align:center; margin-bottom:0.5rem; color:#4d2c3b;">🎚️ Equalizer (Visual)</h4>
+            <div class="eq-sliders">
+                <div class="eq-slider">
+                    <label>Bass</label>
+                    <input type="range" min="0" max="100" value="50" class="eq-input">
+                </div>
+                <div class="eq-slider">
+                    <label>Mid</label>
+                    <input type="range" min="0" max="100" value="50" class="eq-input">
+                </div>
+                <div class="eq-slider">
+                    <label>Treble</label>
+                    <input type="range" min="0" max="100" value="50" class="eq-input">
+                </div>
             </div>
-            <div class="control-group">
-                <label>🎛️ Master</label>
-                <input type="range" id="masterVolume" min="0" max="100" value="80" oninput="updateMaster()">
-                <div class="control-value" id="masterVolDisplay">80%</div>
+            <!-- Animated Visualizer Bars -->
+            <div class="visualizer" id="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
             </div>
         </div>
     </div>
@@ -328,158 +430,164 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        var leftPlayer, rightPlayer;
-        var currentVideoA = null, currentVideoB = null;
-        var autocompleteTimer = {};
+        // YouTube players
+        let players = { A: null, B: null };
+        let currentVideo = { A: null, B: null };
+        let isPlaying = { A: false, B: false };
+        let volumeBase = { A: 80, B: 80 };
 
         function onYouTubeIframeAPIReady() {
-            leftPlayer = new YT.Player('leftPlayer', {
-                height: '100%', width: '100%', videoId: '',
+            players.A = new YT.Player('playerA', {
+                height: '100%', width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 },
                 events: {
-                    'onStateChange': function(e) {
-                        if (e.data === 1 && currentVideoA) loadRelated('A');
-                    }
+                    'onStateChange': (e) => handleStateChange('A', e.data)
                 }
             });
-            rightPlayer = new YT.Player('rightPlayer', {
-                height: '100%', width: '100%', videoId: '',
+            players.B = new YT.Player('playerB', {
+                height: '100%', width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 },
                 events: {
-                    'onStateChange': function(e) {
-                        if (e.data === 1 && currentVideoB) loadRelated('B');
-                    }
+                    'onStateChange': (e) => handleStateChange('B', e.data)
                 }
             });
         }
 
-        async function autocomplete(side) {
-            const query = document.getElementById('search' + side).value.trim();
-            const dropdown = document.getElementById('suggestions' + side);
-            if (query.length < 2) { dropdown.style.display = 'none'; return; }
-            clearTimeout(autocompleteTimer[side]);
-            autocompleteTimer[side] = setTimeout(async () => {
-                try {
-                    const res = await fetch(`https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=${encodeURIComponent(query)}`);
-                    const data = await res.json();
-                    const suggestions = data[1] || [];
-                    if (suggestions.length === 0) { dropdown.style.display = 'none'; return; }
-                    dropdown.innerHTML = suggestions.map(s =>
-                        `<div class="suggestion-item" onclick="selectSuggestion('${side}','${s.replace(/'/g, "\\'")}')">${s}</div>`
-                    ).join('');
-                    dropdown.style.display = 'block';
-                } catch (e) {
-                    dropdown.style.display = 'none';
-                }
-            }, 300);
+        function handleStateChange(side, state) {
+            isPlaying[side] = (state === 1);
+            updateVisualizer();
         }
 
-        function selectSuggestion(side, text) {
-            document.getElementById('search' + side).value = text;
-            document.getElementById('suggestions' + side).style.display = 'none';
-            search(side);
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-box')) {
-                document.querySelectorAll('.suggestions-dropdown').forEach(d => d.style.display = 'none');
+        function updateVisualizer() {
+            const viz = document.getElementById('visualizer');
+            if (isPlaying.A || isPlaying.B) {
+                viz.classList.add('playing');
+            } else {
+                viz.classList.remove('playing');
             }
-        });
+        }
 
+        // Search function
         async function search(side) {
             const query = document.getElementById('search' + side).value.trim();
             if (!query) return;
-            document.getElementById('suggestions' + side).style.display = 'none';
-
             const resultsDiv = document.getElementById('results' + side);
-            resultsDiv.innerHTML = '<div class="video-item"><div class="info"><div class="title">Searching...</div></div></div>';
-
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="result-item"><div class="info"><div class="title">Searching...</div></div></div>';
             try {
-                const response = await fetch(`/api/yt-search?action=search&query=${encodeURIComponent(query)}&maxResults=6`);
-                const data = await response.json();
+                const res = await fetch(`/api/yt-search?action=search&query=${encodeURIComponent(query)}&maxResults=10`);
+                const data = await res.json();
                 if (data.error) {
-                    resultsDiv.innerHTML = `<div class="video-item"><div class="info"><div class="title">⚠️ ${data.error}</div></div></div>`;
+                    resultsDiv.innerHTML = `<div class="result-item"><div class="info"><div class="title">⚠️ ${data.error}</div></div></div>`;
                     return;
                 }
-                renderVideoList(data.videos, resultsDiv, side);
+                renderResults(data.videos, resultsDiv, side);
             } catch (e) {
-                resultsDiv.innerHTML = '<div class="video-item"><div class="info"><div class="title">Search failed.</div></div></div>';
+                resultsDiv.innerHTML = '<div class="result-item"><div class="info"><div class="title">Search failed.</div></div></div>';
             }
         }
 
-        async function loadRelated(side) {
-            const currentId = side === 'A' ? currentVideoA : currentVideoB;
-            if (!currentId) return;
-            const relatedDiv = document.getElementById('related' + side);
-            relatedDiv.innerHTML = '<div class="video-item"><div class="info"><div class="title">Loading...</div></div></div>';
-            try {
-                const response = await fetch(`/api/yt-search?action=related&relatedTo=${currentId}&maxResults=6`);
-                const data = await response.json();
-                if (data.error || !data.videos) { relatedDiv.innerHTML = ''; return; }
-                renderVideoList(data.videos, relatedDiv, side);
-            } catch (e) {
-                relatedDiv.innerHTML = '';
-            }
-        }
-
-        function renderVideoList(videos, container, side) {
+        function renderResults(videos, container, side) {
             container.innerHTML = '';
+            if (videos.length === 0) {
+                container.innerHTML = '<div class="result-item"><div class="info"><div class="title">No results found.</div></div></div>';
+                return;
+            }
             videos.forEach((video, index) => {
-                const el = document.createElement('div');
-                el.className = 'video-item';
-                el.innerHTML = `
+                const item = document.createElement('div');
+                item.className = 'result-item';
+                item.innerHTML = `
                     <img src="${video.thumbnail}" alt="">
                     <div class="info">
                         <div class="title">${video.title}</div>
                         <div class="channel">${video.channel}</div>
                     </div>
                 `;
-                el.onclick = function() {
-                    if (side === 'A') {
-                        currentVideoA = video.id;
-                        if (leftPlayer && leftPlayer.loadVideoById) leftPlayer.loadVideoById(video.id);
-                    } else {
-                        currentVideoB = video.id;
-                        if (rightPlayer && rightPlayer.loadVideoById) rightPlayer.loadVideoById(video.id);
-                    }
-                    container.querySelectorAll('.video-item').forEach(e => e.classList.remove('active'));
-                    el.classList.add('active');
+                item.onclick = () => {
+                    loadVideo(side, video.id, video.title);
+                    // highlight
+                    container.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
                 };
-                container.appendChild(el);
+                container.appendChild(item);
+                // auto-select first for convenience
                 if (index === 0) {
-                    setTimeout(() => el.click(), 400);
+                    setTimeout(() => item.click(), 200);
                 }
             });
         }
 
-        function crossfade() {
-            const cfValue = document.getElementById('crossfader').value;
-            const leftVol = (100 - cfValue) / 100;
-            const rightVol = cfValue / 100;
-            if (leftPlayer && leftPlayer.setVolume) leftPlayer.setVolume(leftVol * 100);
-            if (rightPlayer && rightPlayer.setVolume) rightPlayer.setVolume(rightVol * 100);
-            document.getElementById('fadeLabel').textContent = cfValue < 30 ? 'Track A ⬆️' : (cfValue > 70 ? 'Track B ⬆️' : 'Center');
-            document.getElementById('leftVolDisplay').textContent = Math.round(leftVol * 100) + '%';
-            document.getElementById('rightVolDisplay').textContent = Math.round(rightVol * 100) + '%';
+        function loadVideo(side, videoId, title) {
+            currentVideo[side] = videoId;
+            if (players[side] && players[side].loadVideoById) {
+                players[side].loadVideoById(videoId);
+            }
+            fetchRelated(side, videoId);
         }
 
-        function updateVolume() {
-            const lv = document.getElementById('leftVolume').value;
-            const rv = document.getElementById('rightVolume').value;
-            if (leftPlayer && leftPlayer.setVolume) leftPlayer.setVolume(lv);
-            if (rightPlayer && rightPlayer.setVolume) rightPlayer.setVolume(rv);
-            document.getElementById('leftVolDisplay').textContent = lv + '%';
-            document.getElementById('rightVolDisplay').textContent = rv + '%';
+        async function fetchRelated(side, videoId) {
+            const relatedDiv = document.getElementById('related' + side);
+            relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Loading...</div></div>';
+            try {
+                const res = await fetch(`/api/yt-search?action=related&relatedTo=${videoId}&maxResults=8`);
+                const data = await res.json();
+                if (data.error || !data.videos) {
+                    relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">No related</div></div>';
+                    return;
+                }
+                renderRelated(data.videos, relatedDiv, side);
+            } catch (e) {
+                relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Failed</div></div>';
+            }
         }
 
-        function updateMaster() {
-            const mv = document.getElementById('masterVolume').value;
-            document.getElementById('masterVolDisplay').textContent = mv + '%';
-            const lv = document.getElementById('leftVolume').value;
-            const rv = document.getElementById('rightVolume').value;
-            if (leftPlayer && leftPlayer.setVolume) leftPlayer.setVolume(Math.round(lv * mv / 100));
-            if (rightPlayer && rightPlayer.setVolume) rightPlayer.setVolume(Math.round(rv * mv / 100));
+        function renderRelated(videos, container, side) {
+            container.innerHTML = '';
+            videos.forEach(video => {
+                const rel = document.createElement('div');
+                rel.className = 'related-item';
+                rel.innerHTML = `
+                    <img src="${video.thumbnail}" alt="">
+                    <div class="rel-title">${video.title}</div>
+                `;
+                rel.onclick = () => loadVideo(side, video.id, video.title);
+                container.appendChild(rel);
+            });
         }
+
+        // Volume & Crossfader calculations
+        function updateAllVolumes() {
+            const volA = parseInt(document.getElementById('volA').value) || 80;
+            const volB = parseInt(document.getElementById('volB').value) || 80;
+            const cross = parseInt(document.getElementById('crossfader').value) || 50;
+            const master = parseInt(document.getElementById('masterVol').value) || 90;
+
+            // Crossfade logic: 0 = full A, 100 = full B
+            const leftFactor = (100 - cross) / 100;
+            const rightFactor = cross / 100;
+
+            const effectiveA = volA * leftFactor * master / 100;
+            const effectiveB = volB * rightFactor * master / 100;
+
+            // Set volumes on players
+            if (players.A && players.A.setVolume) players.A.setVolume(effectiveA);
+            if (players.B && players.B.setVolume) players.B.setVolume(effectiveB);
+
+            // Update displays
+            document.getElementById('volAVal').textContent = Math.round(volA * leftFactor) + '%';
+            document.getElementById('volBVal').textContent = Math.round(volB * rightFactor) + '%';
+            document.getElementById('masterVal').textContent = master + '%';
+
+            const fadeLabel = document.getElementById('fadeLabel');
+            if (cross < 30) fadeLabel.textContent = 'Track A ⬆️';
+            else if (cross > 70) fadeLabel.textContent = 'Track B ⬆️';
+            else fadeLabel.textContent = 'Center';
+        }
+
+        // Initial call
+        window.addEventListener('load', () => {
+            updateAllVolumes();
+        });
     </script>
 </body>
 </html>
