@@ -143,9 +143,7 @@
             aspect-ratio: 16 / 9;
             border-radius: 16px;
             overflow: hidden;
-            margin-bottom: 0.8rem;
             background: #000;
-            min-height: 0;
         }
         .player-wrapper iframe {
             width: 100%;
@@ -232,7 +230,7 @@
         .crossfader-section .fade-label {
             font-weight: 600;
             color: #4d2c3b;
-            min-width: 80px;
+            min-width: 90px;
             text-align: center;
             font-size: 0.9rem;
         }
@@ -328,11 +326,13 @@
 
         function onYouTubeIframeAPIReady() {
             players.A = new YT.Player('playerA', {
-                height: '100%', width: '100%',
+                height: '100%',
+                width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 }
             });
             players.B = new YT.Player('playerB', {
-                height: '100%', width: '100%',
+                height: '100%',
+                width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 }
             });
             setTimeout(() => updateAllVolumes(), 500);
@@ -351,27 +351,28 @@
             updateAllVolumes();
         }
 
-        // Fresh Crossfade Logic:
-        // Leftmost = Only A (full), Rightmost = Only B (full), Center = Both Full
         function calculateCrossfadeVolumes() {
             const volA = parseInt(document.getElementById('volA').value) || 100;
             const volB = parseInt(document.getElementById('volB').value) || 100;
-            const cross = parseInt(document.getElementById('crossfader').value) || 50;
+
+            // Get raw slider value and FLIP it so left end = Track A Only
+            let cross = parseInt(document.getElementById('crossfader').value) || 50;
+            cross = 100 - cross;
 
             let leftGain, rightGain;
 
             if (cross <= 50) {
-                // Left side: A full, B fades from 0 to full
+                // Left side: A full volume, B fades in
                 leftGain = 1;
                 rightGain = cross / 50;
             } else {
-                // Right side: B full, A fades from full to 0
+                // Right side: B full volume, A fades out
                 leftGain = 1 - (cross - 50) / 50;
                 rightGain = 1;
             }
 
-            const effectiveA = volA * leftGain;
-            const effectiveB = volB * rightGain;
+            const effectiveA = Math.round(volA * leftGain);
+            const effectiveB = Math.round(volB * rightGain);
 
             return { effectiveA, effectiveB, cross };
         }
@@ -385,17 +386,23 @@
             if (players.A && typeof players.A.setVolume === 'function') players.A.setVolume(finalA);
             if (players.B && typeof players.B.setVolume === 'function') players.B.setVolume(finalB);
 
-            // Update displays
+            // Volume displays
             document.getElementById('volAVal').textContent = muted.A ? 'MUTED' : (document.getElementById('volA').value + '%');
             document.getElementById('volBVal').textContent = muted.B ? 'MUTED' : (document.getElementById('volB').value + '%');
 
-            // Friendly label
+            // Crossfader label
             const fadeLabel = document.getElementById('fadeLabel');
-            if (cross <= 3) fadeLabel.textContent = 'Track A Only';
-            else if (cross >= 97) fadeLabel.textContent = 'Track B Only';
-            else if (cross >= 47 && cross <= 53) fadeLabel.textContent = 'Both Full';
-            else if (cross < 50) fadeLabel.textContent = 'A > B';
-            else fadeLabel.textContent = 'B > A';
+            if (cross <= 3) {
+                fadeLabel.textContent = 'Track A Only';
+            } else if (cross >= 97) {
+                fadeLabel.textContent = 'Track B Only';
+            } else if (cross >= 47 && cross <= 53) {
+                fadeLabel.textContent = 'Both Full';
+            } else if (cross < 50) {
+                fadeLabel.textContent = 'A > B';
+            } else {
+                fadeLabel.textContent = 'B > A';
+            }
         }
 
         // Search
