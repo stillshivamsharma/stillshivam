@@ -18,8 +18,7 @@
             --font-sans: 'Quicksand', sans-serif;
             --accent: #e894a8;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
             font-family: var(--font-sans);
             background: radial-gradient(ellipse at 30% 40%, #ffeef4, #f3e2f0, #e1dff8, #dcedf8);
@@ -30,7 +29,6 @@
             align-items: center;
             overflow-x: hidden;
         }
-
         .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -43,7 +41,6 @@
             max-width: 1300px;
             margin-bottom: 2rem;
         }
-
         h1 {
             font-family: var(--font-serif);
             font-size: 2.8rem;
@@ -58,14 +55,12 @@
             font-size: 1rem;
         }
 
-        /* Decks Grid */
         .decks {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             margin-bottom: 2rem;
         }
-
         .deck {
             background: rgba(255,245,248,0.5);
             border: 1px solid rgba(255,220,230,0.6);
@@ -74,7 +69,6 @@
             display: flex;
             flex-direction: column;
         }
-
         .deck h3 {
             font-family: var(--font-serif);
             font-size: 1.4rem;
@@ -82,7 +76,6 @@
             margin-bottom: 1rem;
         }
 
-        /* Search */
         .search-box {
             position: relative;
             display: flex;
@@ -118,7 +111,6 @@
         }
         .btn-sm:hover { background: linear-gradient(145deg,#fadce6,#f8c0d2); }
 
-        /* Search Results Dropdown (now block that pushes content) */
         .search-results {
             max-height: 300px;
             overflow-y: auto;
@@ -145,7 +137,6 @@
         .result-item .title { font-size: 0.9rem; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .result-item .channel { font-size: 0.75rem; color: var(--text-muted); }
 
-        /* Player container */
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -153,6 +144,8 @@
             border-radius: 16px;
             overflow: hidden;
             margin-bottom: 0.8rem;
+            background: #000; /* placeholder while loading */
+            min-height: 0; /* prevent flex blowout */
         }
         .player-wrapper iframe {
             width: 100%;
@@ -160,7 +153,6 @@
             border: none;
         }
 
-        /* Related videos (horizontal scroll) */
         .related-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -198,7 +190,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Controls */
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -208,13 +199,11 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
         }
-
         .control-panel {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
-
         .slider-group label {
             display: block;
             font-weight: 600;
@@ -245,7 +234,6 @@
             accent-color: var(--accent);
         }
 
-        /* Equalizer (visual) */
         .eq-section {
             background: rgba(255,235,240,0.5);
             border-radius: 20px;
@@ -269,7 +257,6 @@
             accent-color: #d4889b;
         }
 
-        /* Animated Visualizer */
         .visualizer {
             display: flex;
             justify-content: center;
@@ -297,7 +284,7 @@
 
         @keyframes bounce {
             0% { height: 5px; }
-            100% { height: 30px; }
+            100% { height: 35px; }
         }
 
         .master-row {
@@ -368,7 +355,6 @@
 
         <!-- Controls -->
         <div class="controls-grid">
-            <!-- Left controls -->
             <div class="control-panel">
                 <div class="slider-group">
                     <label>🔊 Volume A</label>
@@ -376,7 +362,6 @@
                     <div class="slider-value" id="volAVal">80%</div>
                 </div>
             </div>
-            <!-- Right controls -->
             <div class="control-panel">
                 <div class="slider-group">
                     <label>🔊 Volume B</label>
@@ -394,31 +379,21 @@
             <div style="font-weight:600; color:#4d2c3b;" id="fadeLabel">Center</div>
         </div>
 
-        <!-- Master Volume -->
+        <!-- Master -->
         <div class="master-row">
             <label>🎛️ Master</label>
             <input type="range" id="masterVol" min="0" max="100" value="90" oninput="updateAllVolumes()">
             <div class="slider-value" id="masterVal">90%</div>
         </div>
 
-        <!-- Equalizer (Visual) -->
+        <!-- Visual Equalizer -->
         <div class="eq-section">
             <h4 style="text-align:center; margin-bottom:0.5rem; color:#4d2c3b;">🎚️ Equalizer (Visual)</h4>
             <div class="eq-sliders">
-                <div class="eq-slider">
-                    <label>Bass</label>
-                    <input type="range" min="0" max="100" value="50" class="eq-input">
-                </div>
-                <div class="eq-slider">
-                    <label>Mid</label>
-                    <input type="range" min="0" max="100" value="50" class="eq-input">
-                </div>
-                <div class="eq-slider">
-                    <label>Treble</label>
-                    <input type="range" min="0" max="100" value="50" class="eq-input">
-                </div>
+                <div class="eq-slider"><label>Bass</label><input type="range" min="0" max="100" value="50"></div>
+                <div class="eq-slider"><label>Mid</label><input type="range" min="0" max="100" value="50"></div>
+                <div class="eq-slider"><label>Treble</label><input type="range" min="0" max="100" value="50"></div>
             </div>
-            <!-- Animated Visualizer Bars -->
             <div class="visualizer" id="visualizer">
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 <div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -428,29 +403,25 @@
 
     <a href="portfolio.html" class="back-link">← back to portfolio</a>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- FIXED: Define onYouTubeIframeAPIReady BEFORE loading iframe API -->
     <script>
-        // YouTube players
         let players = { A: null, B: null };
         let currentVideo = { A: null, B: null };
         let isPlaying = { A: false, B: false };
-        let volumeBase = { A: 80, B: 80 };
 
         function onYouTubeIframeAPIReady() {
             players.A = new YT.Player('playerA', {
                 height: '100%', width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 },
-                events: {
-                    'onStateChange': (e) => handleStateChange('A', e.data)
-                }
+                events: { 'onStateChange': (e) => handleStateChange('A', e.data) }
             });
             players.B = new YT.Player('playerB', {
                 height: '100%', width: '100%',
                 playerVars: { 'controls': 1, 'autoplay': 0 },
-                events: {
-                    'onStateChange': (e) => handleStateChange('B', e.data)
-                }
+                events: { 'onStateChange': (e) => handleStateChange('B', e.data) }
             });
+            // Initial volume set after players ready
+            setTimeout(() => updateAllVolumes(), 500);
         }
 
         function handleStateChange(side, state) {
@@ -460,11 +431,8 @@
 
         function updateVisualizer() {
             const viz = document.getElementById('visualizer');
-            if (isPlaying.A || isPlaying.B) {
-                viz.classList.add('playing');
-            } else {
-                viz.classList.remove('playing');
-            }
+            if (isPlaying.A || isPlaying.B) viz.classList.add('playing');
+            else viz.classList.remove('playing');
         }
 
         // Search function
@@ -489,11 +457,7 @@
 
         function renderResults(videos, container, side) {
             container.innerHTML = '';
-            if (videos.length === 0) {
-                container.innerHTML = '<div class="result-item"><div class="info"><div class="title">No results found.</div></div></div>';
-                return;
-            }
-            videos.forEach((video, index) => {
+            videos.forEach(video => {
                 const item = document.createElement('div');
                 item.className = 'result-item';
                 item.innerHTML = `
@@ -505,16 +469,12 @@
                 `;
                 item.onclick = () => {
                     loadVideo(side, video.id, video.title);
-                    // highlight
                     container.querySelectorAll('.result-item').forEach(el => el.classList.remove('active'));
                     item.classList.add('active');
                 };
                 container.appendChild(item);
-                // auto-select first for convenience
-                if (index === 0) {
-                    setTimeout(() => item.click(), 200);
-                }
             });
+            // Auto-select removed – user now clicks manually
         }
 
         function loadVideo(side, videoId, title) {
@@ -522,6 +482,8 @@
             if (players[side] && players[side].loadVideoById) {
                 players[side].loadVideoById(videoId);
             }
+            // Hide search results after selection
+            document.getElementById('results' + side).style.display = 'none';
             fetchRelated(side, videoId);
         }
 
@@ -532,12 +494,12 @@
                 const res = await fetch(`/api/yt-search?action=related&relatedTo=${videoId}&maxResults=8`);
                 const data = await res.json();
                 if (data.error || !data.videos) {
-                    relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">No related</div></div>';
+                    relatedDiv.innerHTML = '';
                     return;
                 }
                 renderRelated(data.videos, relatedDiv, side);
             } catch (e) {
-                relatedDiv.innerHTML = '<div class="related-item"><div class="rel-title">Failed</div></div>';
+                relatedDiv.innerHTML = '';
             }
         }
 
@@ -555,27 +517,25 @@
             });
         }
 
-        // Volume & Crossfader calculations
         function updateAllVolumes() {
             const volA = parseInt(document.getElementById('volA').value) || 80;
             const volB = parseInt(document.getElementById('volB').value) || 80;
             const cross = parseInt(document.getElementById('crossfader').value) || 50;
             const master = parseInt(document.getElementById('masterVol').value) || 90;
 
-            // Crossfade logic: 0 = full A, 100 = full B
             const leftFactor = (100 - cross) / 100;
             const rightFactor = cross / 100;
 
-            const effectiveA = volA * leftFactor * master / 100;
-            const effectiveB = volB * rightFactor * master / 100;
+            const effectiveA = Math.round(volA * leftFactor * master / 100);
+            const effectiveB = Math.round(volB * rightFactor * master / 100);
 
-            // Set volumes on players
-            if (players.A && players.A.setVolume) players.A.setVolume(effectiveA);
-            if (players.B && players.B.setVolume) players.B.setVolume(effectiveB);
+            // Set volumes (with null safety)
+            if (players.A && typeof players.A.setVolume === 'function') players.A.setVolume(effectiveA);
+            if (players.B && typeof players.B.setVolume === 'function') players.B.setVolume(effectiveB);
 
-            // Update displays
-            document.getElementById('volAVal').textContent = Math.round(volA * leftFactor) + '%';
-            document.getElementById('volBVal').textContent = Math.round(volB * rightFactor) + '%';
+            // Update displays: show original slider value, not effective
+            document.getElementById('volAVal').textContent = volA + '%';
+            document.getElementById('volBVal').textContent = volB + '%';
             document.getElementById('masterVal').textContent = master + '%';
 
             const fadeLabel = document.getElementById('fadeLabel');
@@ -584,10 +544,13 @@
             else fadeLabel.textContent = 'Center';
         }
 
-        // Initial call
+        // Safety: call once after full page load too
         window.addEventListener('load', () => {
             updateAllVolumes();
         });
     </script>
+
+    <!-- Now load YouTube IFrame API (after defining callback) -->
+    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
