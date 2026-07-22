@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivam · a gentle corner</title>
     <meta name="description" content="Shivam Sharma – a gentle corner for creative souls. Soft aesthetics, heartfelt storytelling, and a touch of clouds.">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="Shivam · a gentle corner">
+    <meta property="og:description" content="Soft aesthetics, heartfelt storytelling, and a touch of clouds.">
+    <meta property="og:image" content="https://yourdomain.com/images/preview.png">
+    <meta property="og:url" content="https://yourdomain.com/index.html">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,6 +34,7 @@
             </ul>
             <div class="nav-right">
                 <a href="portfolio.html" class="portfolio-link internal-link mobile-portfolio">Portfolio</a>
+                <button id="darkModeToggle" class="nav-icon-btn" aria-label="Toggle dark mode" style="background:none;border:none;font-size:1.4rem;cursor:pointer;margin-right:8px;">🌙</button>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -90,7 +99,6 @@
                 <h2 style="font-size:2rem">Let's create something gentle together.</h2>
                 <p class="about-text" style="margin-bottom:2rem;color:var(--text-muted)">Open to creative projects, photography collaborations, and interesting ideas. Drop a message — I'd love to hear what you're dreaming about.</p>
                 <form class="collab-form" id="collabForm" method="POST">
-                    <!-- action will be set dynamically from env -->
                     <div class="form-group"><label>Your name</label><input type="text" name="name" placeholder="e.g. Priya, Rohan..." required></div>
                     <div class="form-group"><label>Email</label><input type="email" name="email" placeholder="you@example.com" required></div>
                     <div class="form-group"><label>Message</label><textarea name="message" rows="4" placeholder="Tell me about your idea, project, or just a warm hello..." required></textarea></div>
@@ -109,23 +117,8 @@
         </div>
     </footer>
 
+    <script src="js/utils.js"></script>
+    <script src="js/navbar.js"></script>
     <script src="js/main.js"></script>
-    <!-- Additional script for dynamic form action -->
-    <script>
-        // Fetch Formspree endpoint from env and set form action
-        (async function() {
-            try {
-                const res = await fetch('/api/form-action');
-                const data = await res.json();
-                if (data.endpoint) {
-                    document.getElementById('collabForm').action = data.endpoint;
-                } else {
-                    console.warn('No Formspree endpoint configured, form may not work.');
-                }
-            } catch (e) {
-                console.error('Failed to load form endpoint', e);
-            }
-        })();
-    </script>
 </body>
 </html>
