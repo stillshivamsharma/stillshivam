@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Shivam · DJ Mixer Pro</title>
     <meta name="description" content="Professional DJ Mixer - Crossfade between two YouTube music tracks.">
+    <meta property="og:title" content="Shivam · DJ Mixer Pro">
+    <meta property="og:description" content="Crossfade between two YouTube music tracks.">
+    <meta property="og:image" content="https://yourdomain.com/images/preview.png">
+    <meta property="og:url" content="https://yourdomain.com/dj-mixer.html">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -51,7 +57,6 @@
             line-height: 1.5;
         }
 
-        /* ========== NAVBAR ========== */
         nav {
             position: fixed;
             top: 0;
@@ -145,7 +150,6 @@
             margin: 3px 0;
         }
 
-        /* ========== MAIN CARD ========== */
         .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -177,7 +181,6 @@
             font-weight: 400;
         }
 
-        /* ========== DECKS GRID ========== */
         .decks {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -207,7 +210,6 @@
             font-weight: 500;
         }
 
-        /* ========== SEARCH ========== */
         .search-box {
             position: relative;
             display: flex;
@@ -263,7 +265,6 @@
             transform: scale(0.97);
         }
 
-        /* ========== SEARCH RESULTS ========== */
         .search-results {
             max-height: 280px;
             overflow-y: auto;
@@ -340,7 +341,6 @@
             text-overflow: ellipsis;
         }
 
-        /* ========== PLAYER ========== */
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -359,7 +359,6 @@
             border: none;
         }
 
-        /* ========== CONTROLS ========== */
         .controls-section {
             display: flex;
             flex-direction: column;
@@ -498,7 +497,6 @@
             font-size: 0.8rem;
         }
 
-        /* ========== BACK LINK ========== */
         .back-link {
             display: inline-block;
             margin-top: 0.5rem;
@@ -524,7 +522,7 @@
             font-size: 0.8rem;
         }
 
-        /* ========== RESPONSIVE ========== */
+        /* Mobile fixes */
         @media (max-width: 900px) {
             .decks {
                 grid-template-columns: 1fr;
@@ -545,6 +543,9 @@
                 padding: 1.2rem;
                 border-radius: 32px;
                 width: 95%;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background: rgba(255,245,250,0.88);
             }
 
             h1 {
@@ -624,35 +625,38 @@
                 font-size: 0.72rem;
             }
         }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ==================== NAVBAR ==================== -->
-<nav id="navbar">
-    <div class="nav-inner">
-        <a href="index.html" class="nav-logo">Shivam Sharma</a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="portfolio.html">Portfolio</a></li>
-            <li><a href="index.html" class="active-link">Main Site</a></li>
-        </ul>
-        <button class="hamburger" id="hamburger" aria-label="Menu">
-            <span></span><span></span><span></span>
-        </button>
-    </div>
-</nav>
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">Shivam Sharma</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="index.html">Main Site</a></li>
+            </ul>
+            <div class="nav-right">
+                <button id="darkModeToggle" class="nav-icon-btn" aria-label="Toggle dark mode" style="background:none;border:none;font-size:1.4rem;cursor:pointer;margin-right:8px;">🌙</button>
+                <button class="hamburger" id="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
 
-    <!-- ==================== MAIN CONTAINER ==================== -->
     <div class="glass-card">
-
         <h1>🎧 DJ Mixer Pro</h1>
         <p class="subtitle">Search YouTube music, load two tracks, crossfade &amp; mix.</p>
 
-        <!-- ==================== DECKS ==================== -->
         <div class="decks">
-
-            <!-- ========== DECK A ========== -->
             <div class="deck" id="deckA">
                 <h3>🎵 Track A</h3>
                 <div class="search-box">
@@ -663,7 +667,6 @@
                 <div class="player-wrapper" id="playerA"></div>
             </div>
 
-            <!-- ========== DECK B ========== -->
             <div class="deck" id="deckB">
                 <h3>🎵 Track B</h3>
                 <div class="search-box">
@@ -673,13 +676,9 @@
                 <div class="search-results" id="resultsB"></div>
                 <div class="player-wrapper" id="playerB"></div>
             </div>
-
         </div>
 
-        <!-- ==================== CONTROLS ==================== -->
         <div class="controls-section">
-
-            <!-- Volume + Mute -->
             <div class="volume-mute-row">
                 <div class="vol-group">
                     <label for="volA">🔊 A</label>
@@ -696,7 +695,6 @@
                 <button class="mute-btn" id="muteBBtn" onclick="toggleMute('B')" aria-label="Mute Track B">🔊</button>
             </div>
 
-            <!-- Crossfader -->
             <div class="crossfader-section">
                 <span>◀ A</span>
                 <input type="range" id="crossfader" min="0" max="100" value="50" oninput="updateAllVolumes()" aria-label="Crossfader">
@@ -704,54 +702,35 @@
                 <span class="fade-label" id="fadeLabel">Center</span>
             </div>
 
-            <!-- Master Volume -->
             <div class="master-row">
                 <label for="masterVol">🎛️ Master</label>
                 <input type="range" id="masterVol" min="0" max="100" value="90" oninput="updateAllVolumes()" aria-label="Master Volume">
                 <span class="slider-value" id="masterVal">90%</span>
             </div>
-
         </div>
     </div>
 
-    <a href="portfolio.html" class="back-link" aria-label="Back to Portfolio">← back to portfolio</a>
+    <a href="portfolio.html" class="back-link">← back to portfolio</a>
     <footer>— with tenderness, <strong>Shivam</strong> —</footer>
 
-    <!-- ==================== SCRIPTS ==================== -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/navbar.js"></script>
     <script>
-        // ========== NAVBAR ==========
-        (function() {
-            var nav = document.getElementById('navbar');
-            var hamburger = document.getElementById('hamburger');
-            var navLinks = document.getElementById('navLinks');
-
-            window.addEventListener('scroll', function() {
-                if (window.scrollY > 30) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
-                }
-            }, { passive: true });
-
-            if (hamburger && navLinks) {
-                hamburger.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    navLinks.classList.toggle('show');
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-                        navLinks.classList.remove('show');
-                    }
-                });
-            }
-        })();
-
-        // ========== DJ MIXER LOGIC ==========
         var players = Object.create(null);
         var muted = { A: false, B: false };
+        var ytReady = false;
 
-        function onYouTubeIframeAPIReady() {
+        window.onYouTubeIframeAPIReady = function() {
+            ytReady = true;
+            initPlayers();
+        };
+
+        function initPlayers() {
+            if (!ytReady) {
+                setTimeout(initPlayers, 200);
+                return;
+            }
             try {
                 players.A = new YT.Player('playerA', {
                     height: '100%',
@@ -855,7 +834,6 @@
             resultsDiv.innerHTML = '<div class="result-item"><div class="info"><div class="title">🔍 Searching...</div></div></div>';
 
             try {
-                // videoCategoryId=10 = Music category for better music results
                 var res = await fetch('/api/yt-search?action=search&query=' + encodeURIComponent(query) + '&maxResults=10&category=10');
                 if (!res.ok) throw new Error('API returned ' + res.status);
                 var data = await res.json();
@@ -880,7 +858,7 @@
                 if (!video || !video.id) return;
                 var item = document.createElement('div');
                 item.className = 'result-item';
-                item.innerHTML = '<img src="' + escapeHTML(video.thumbnail || '') + '" alt="" loading="lazy"><div class="info"><div class="title">' + escapeHTML(video.title || 'Unknown') + '</div><div class="channel">' + escapeHTML(video.channel || 'Unknown') + '</div></div>';
+                item.innerHTML = '<img src="' + escapeHTML(video.thumbnail || '') + '" alt="Video thumbnail" loading="lazy"><div class="info"><div class="title">' + escapeHTML(video.title || 'Unknown') + '</div><div class="channel">' + escapeHTML(video.channel || 'Unknown') + '</div></div>';
                 item.addEventListener('click', function() {
                     loadVideo(side, video.id);
                     var allItems = container.querySelectorAll('.result-item');
@@ -909,7 +887,24 @@
         window.addEventListener('DOMContentLoaded', function() { updateAllVolumes(); });
     </script>
 
-    <script src="https://www.youtube.com/iframe_api" async defer></script>
-
+    <script>
+        // Dark mode toggle (standalone because main.js not loaded on this page)
+        (function() {
+            var darkToggle = document.getElementById('darkModeToggle');
+            if (darkToggle) {
+                var savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    darkToggle.textContent = '☀️';
+                }
+                darkToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    var isDark = document.body.classList.contains('dark-mode');
+                    darkToggle.textContent = isDark ? '☀️' : '🌙';
+                    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
