@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivam · portfolio</title>
-    <meta name="description" content="Shivam Sharma's portfolio – fun calculators, Dada Ji AI advisor, and safe link inspector.">
+    <meta name="description" content="Shivam Sharma's portfolio – fun calculators, Dada Ji AI advisor, DJ Mixer, YouTube Clone and safe link inspector.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -125,10 +125,12 @@
         </div>
     </section>
 
+    <!-- TOP PROJECTS -->
     <section id="top-projects" style="padding-top:10px;padding-bottom:60px;">
         <div class="container reveal">
             <span class="section-badge red-badge" style="font-weight:600;">TOP PROJECTS</span>
             
+            <!-- Link Inspector -->
             <div class="glass-card">
                 <h2 style="font-size:2rem;color:#d63447;">🔍 Link Inspector</h2>
                 <p class="about-text" style="margin-bottom:1.5rem;color:var(--text-soft);">
@@ -150,14 +152,23 @@
                 </div>
             </div>
 
+            <!-- DJ Mixer Tile -->
             <a href="dj-mixer.html" class="project-tile-btn">
                 <h3>🎧 DJ Mixer Pro</h3>
                 <p>Crossfade between two YouTube tracks. Search, load & mix — simple and fun.</p>
                 <span class="arrow">→</span>
             </a>
+
+            <!-- YouTube Clone Tile -->
+            <a href="youtube.html" class="project-tile-btn">
+                <h3>▶️ YouTube Clone</h3>
+                <p>Ad‑free YouTube experience with dark theme, search & watch.</p>
+                <span class="arrow">→</span>
+            </a>
         </div>
     </section>
 
+    <!-- Calculators -->
     <section id="calculators" style="padding-top:20px;padding-bottom:60px;">
         <div class="container reveal">
             <span class="section-badge">dowry &amp; alimony calculators</span>
@@ -213,6 +224,7 @@
         </div>
     </section>
 
+    <!-- Dada Ji AI Chat -->
     <section id="general-ai" style="padding-top:0;padding-bottom:80px;">
         <div class="container reveal">
             <span class="section-badge">Ask Dada Ji 🥸</span>
@@ -234,7 +246,7 @@
 
     <script src="js/main.js"></script>
     <script>
-        // ========== LINK INSPECTOR WITH ENV KEY ==========
+        // Link Inspector with ScreenshotOne key from API
         (function() {
             const urlInput = document.getElementById('inspectUrl');
             const inspectBtn = document.getElementById('inspectBtn');
@@ -245,7 +257,6 @@
 
             let screenshotOneKey = null;
 
-            // Load key from serverless function
             async function loadKey() {
                 try {
                     const res = await fetch('/api/screenshot-key');
@@ -255,7 +266,7 @@
                     console.error('Failed to load ScreenshotOne key', e);
                 }
             }
-            loadKey(); // fetch immediately
+            loadKey();
 
             function resetView() {
                 previewContainer.style.display = 'none';
@@ -275,19 +286,16 @@
                 loadingText.style.display = 'block';
 
                 const screenshotUrl = 'https://api.screenshotone.com/take?access_key=' + screenshotOneKey + '&url=' + encodeURIComponent(url) + '&format=png';
-
                 previewImage.src = screenshotUrl;
 
                 previewImage.onload = function() {
                     loadingText.style.display = 'none';
                     previewContainer.style.display = 'block';
                 };
-
                 previewImage.onerror = function() {
                     loadingText.style.display = 'none';
                     previewError.style.display = 'block';
                 };
-
                 setTimeout(function() {
                     if (previewImage.naturalWidth === 0) {
                         loadingText.style.display = 'none';
@@ -298,10 +306,7 @@
 
             inspectBtn.addEventListener('click', function() {
                 let url = urlInput.value.trim();
-                if (!url) {
-                    alert('Please paste a link.');
-                    return;
-                }
+                if (!url) { alert('Please paste a link.'); return; }
                 if (!url.startsWith('http://') && !url.startsWith('https://')) {
                     url = 'https://' + url;
                     urlInput.value = url;
