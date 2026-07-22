@@ -1,5 +1,5 @@
-// ==================== YOUTUBE CLONE JS (FIXED) ====================
-(function() {
+// js/youtube.js
+(function () {
     'use strict';
 
     const API_BASE = '/api/yt-search';
@@ -13,17 +13,29 @@
 
     let isGridView = true;
     let currentQuery = 'trending music';
-    let player = null;           // YouTube Player instance
-    let relatedVideos = [];      // store related video IDs
+    let player = null;
+    let relatedVideos = [];
     let currentVideoId = null;
+    let ytApiReady = false;
 
-    // ==================== SIDEBAR TOGGLE ====================
+    // YouTube IFrame API callback
+    window.onYouTubeIframeAPIReady = () => {
+        ytApiReady = true;
+        console.log('YT API ready');
+    };
+
+    function waitForApi(callback) {
+        if (ytApiReady) callback();
+        else setTimeout(() => waitForApi(callback), 200);
+    }
+
+    // Sidebar toggle
     menuBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('full-width');
     });
 
-    // ==================== SEARCH ====================
+    // Search
     function performSearch() {
         const query = searchInput.value.trim();
         if (!query) return;
@@ -38,7 +50,7 @@
         if (e.key === 'Enter') performSearch();
     });
 
-    // ==================== CHIP BAR (re-attached in showGridView) ====================
+    // Chip bar events
     function attachChipEvents() {
         const chipBar = document.getElementById('chipBar');
         if (!chipBar) return;
@@ -53,7 +65,7 @@
         });
     }
 
-    // ==================== LOAD VIDEOS (GRID) ====================
+    // Load videos grid
     async function loadVideos(query) {
         const grid = document.getElementById('videoGrid');
         if (!grid) return;
@@ -67,7 +79,7 @@
                 grid.innerHTML = '<div style="color:#aaa;padding:20px;text-align:center;">No videos found</div>';
             }
         } catch (e) {
-            grid.innerHTML = '<div style="color:#aaa;padding:20px;text-align:center;">Failed to load videos. Try again.</div>';
+            grid.innerHTML = '<div style="color:#aaa;padding:20px;text-align:center;">Failed to load videos.</div>';
         }
     }
 
@@ -80,7 +92,7 @@
         });
     }
 
-    // ==================== CREATE VIDEO CARD ====================
+    // Create video card (used in grid and related sidebar)
     function createVideoCard(video, compact = false) {
         const card = document.createElement('div');
         card.className = 'yt-video-card';
@@ -89,13 +101,17 @@
             ? '<div class="yt-live-badge">LIVE</div>'
             : (video.duration ? `<div class="yt-duration">${video.duration}</div>` : '');
 
+        // Generate channel initial avatar
+        const initial = video.channel ? video.channel.charAt(0).toUpperCase() : '?';
+        const avatarHTML = compact ? '' : `<div class="yt-channel-avatar" aria-hidden="true">${initial}</div>`;
+
         card.innerHTML = `
             <div class="yt-thumbnail-container">
-                <img src="${video.thumbnail}" alt="" loading="lazy">
+                <img src="${video.thumbnail}" alt="Video thumbnail" loading="lazy">
                 ${durationHTML}
             </div>
             <div class="yt-video-info">
-                ${!compact ? '<div class="yt-channel-avatar"><img src="https://via.placeholder.com/36" alt="" loading="lazy"></div>' : ''}
+                ${avatarHTML}
                 <div class="yt-video-details">
                     <div class="yt-video-title">${escapeHTML(video.title)}</div>
                     <div class="yt-channel-name">${escapeHTML(video.channel)}</div>
@@ -106,7 +122,7 @@
         return card;
     }
 
-    // ==================== WATCH PAGE (rewritten for IFrame API) ====================
+    // Open watch page (uses IFrame API)
     function openWatchPage(videoId, title, channel, thumbnail) {
         currentVideoId = videoId;
         relatedVideos = [];
@@ -117,10 +133,10 @@
                     <div class="yt-watch-player" id="playerContainer"></div>
                     <div class="yt-watch-title">${escapeHTML(title)}</div>
                     <div class="yt-watch-channel">
-                        <img src="https://via.placeholder.com/40" alt="">
+                        <div class="yt-channel-avatar large" aria-hidden="true">${channel.charAt(0).toUpperCase()}</div>
                         <div>
                             <div class="yt-watch-channel-name">${escapeHTML(channel)}</div>
-                            <div class="yt-watch-channel-subs">Loading...</div>
+                            <div class="yt-watch-channel-subs" id="videoStats">Loading stats...</div>
                         </div>
                         <button class="yt-subscribe-btn">Subscribe</button>
                     </div>
@@ -132,40 +148,37 @@
             </div>
         `;
 
-        // Create YouTube Player using IFrame API
-        if (player) {
-            player.destroy();
+        // Create player when API ready
+        function createPlayer() {
+            if (player) player.destroy();
+            player = new YT.Player('playerContainer', {
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 1,
+                    rel: 0,
+                    enablejsapi: 1,
+                    controls: 1,
+                    modestbranding: 0,
+                    origin: window.location.origin
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+            loadVideoDetails(videoId);
+            loadRelatedVideos(videoId);
         }
-        player = new YT.Player('playerContainer', {
-            videoId: videoId,
-            playerVars: {
-                autoplay: 1,
-                rel: 0,
-                enablejsapi: 1,
-                controls: 1,
-                modestbranding: 0,    // full YouTube look
-                origin: window.location.origin
-            },
-            events: {
-                'onStateChange': onPlayerStateChange,
-                'onError': onPlayerError
-            }
-        });
-
-        loadVideoDetails(videoId);
-        loadRelatedVideos(videoId);
+        waitForApi(createPlayer);
     }
 
-    // ==================== PLAYER STATE CHANGE (autoplay next) ====================
     function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.ENDED && relatedVideos.length > 0) {
-            // Play next related video
             const nextVideo = relatedVideos.shift();
             if (nextVideo && player && player.loadVideoById) {
                 player.loadVideoById(nextVideo.id);
                 currentVideoId = nextVideo.id;
                 loadVideoDetails(nextVideo.id);
-                // Reload related for the new video
                 loadRelatedVideos(nextVideo.id);
             }
         }
@@ -175,20 +188,28 @@
         console.error('Player error:', event.data);
     }
 
-    // ==================== LOAD VIDEO DETAILS ====================
+    // Load video details (description + stats)
     async function loadVideoDetails(videoId) {
         const descEl = document.getElementById('videoDescription');
-        if (!descEl) return;
+        const statsEl = document.getElementById('videoStats');
+        if (!descEl && !statsEl) return;
         try {
             const res = await fetch(`${DETAILS_API}?id=${videoId}`);
             const data = await res.json();
-            descEl.textContent = data.description || 'No description available.';
+            if (descEl) descEl.textContent = data.description || 'No description available.';
+            if (statsEl) {
+                const views = parseInt(data.views).toLocaleString() || '0';
+                const likes = parseInt(data.likes).toLocaleString() || '0';
+                const pubDate = data.published ? new Date(data.published).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+                statsEl.textContent = `${views} views · ${likes} likes · ${pubDate}`;
+            }
         } catch (e) {
-            descEl.textContent = 'Failed to load description.';
+            if (descEl) descEl.textContent = 'Failed to load description.';
+            if (statsEl) statsEl.textContent = 'Stats unavailable';
         }
     }
 
-    // ==================== LOAD RELATED VIDEOS ====================
+    // Load related videos
     async function loadRelatedVideos(videoId) {
         const sidebarEl = document.getElementById('watchSidebar');
         if (!sidebarEl) return;
@@ -197,21 +218,22 @@
             const res = await fetch(`${API_BASE}?action=related&relatedTo=${videoId}&maxResults=12`);
             const data = await res.json();
             if (data.videos && data.videos.length > 0) {
-                relatedVideos = data.videos;   // store for autoplay
+                relatedVideos = data.videos;
                 sidebarEl.innerHTML = '';
                 data.videos.forEach(video => {
                     const card = createVideoCard(video, true);
                     card.addEventListener('click', () => {
-                        // Play this video in the same player
                         if (player && player.loadVideoById) {
                             player.loadVideoById(video.id);
                             currentVideoId = video.id;
                             loadVideoDetails(video.id);
-                            // Reload related for this video
                             loadRelatedVideos(video.id);
-                            // Update title and channel in the watch page (optional)
+                            // Update title and channel display
                             document.querySelector('.yt-watch-title').textContent = video.title;
                             document.querySelector('.yt-watch-channel-name').textContent = video.channel;
+                            // Update channel avatar
+                            const avatarDiv = document.querySelector('.yt-watch-channel .yt-channel-avatar');
+                            if (avatarDiv) avatarDiv.textContent = video.channel.charAt(0).toUpperCase();
                         }
                     });
                     sidebarEl.appendChild(card);
@@ -226,7 +248,7 @@
         }
     }
 
-    // ==================== SHOW GRID VIEW ====================
+    // Show grid view (home)
     function showGridView() {
         mainContent.innerHTML = `
             <div class="yt-chip-bar" id="chipBar">
@@ -244,7 +266,7 @@
         isGridView = true;
     }
 
-    // ==================== KEYBOARD SHORTCUTS ====================
+    // Keyboard shortcut: press 'i' to go home
     document.addEventListener('keydown', (e) => {
         if (document.activeElement === searchInput) return;
         if (e.key === 'i' && !e.ctrlKey && !e.metaKey) {
@@ -254,14 +276,6 @@
         }
     });
 
-    // ==================== HELPER ====================
-    function escapeHTML(str) {
-        if (!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
-    }
-
-    // ==================== INITIAL LOAD ====================
+    // Initial load
     loadVideos('trending music');
 })();
