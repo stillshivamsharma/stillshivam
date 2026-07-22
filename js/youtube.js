@@ -1,4 +1,3 @@
-// js/youtube.js
 (function () {
     'use strict';
 
@@ -18,7 +17,6 @@
     let currentVideoId = null;
     let ytApiReady = false;
 
-    // YouTube IFrame API callback
     window.onYouTubeIframeAPIReady = () => {
         ytApiReady = true;
         console.log('YT API ready');
@@ -29,13 +27,11 @@
         else setTimeout(() => waitForApi(callback), 200);
     }
 
-    // Sidebar toggle
     menuBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('full-width');
     });
 
-    // Search
     function performSearch() {
         const query = searchInput.value.trim();
         if (!query) return;
@@ -50,7 +46,6 @@
         if (e.key === 'Enter') performSearch();
     });
 
-    // Chip bar events
     function attachChipEvents() {
         const chipBar = document.getElementById('chipBar');
         if (!chipBar) return;
@@ -65,7 +60,6 @@
         });
     }
 
-    // Load videos grid
     async function loadVideos(query) {
         const grid = document.getElementById('videoGrid');
         if (!grid) return;
@@ -92,7 +86,6 @@
         });
     }
 
-    // Create video card (used in grid and related sidebar)
     function createVideoCard(video, compact = false) {
         const card = document.createElement('div');
         card.className = 'yt-video-card';
@@ -101,7 +94,6 @@
             ? '<div class="yt-live-badge">LIVE</div>'
             : (video.duration ? `<div class="yt-duration">${video.duration}</div>` : '');
 
-        // Generate channel initial avatar
         const initial = video.channel ? video.channel.charAt(0).toUpperCase() : '?';
         const avatarHTML = compact ? '' : `<div class="yt-channel-avatar" aria-hidden="true">${initial}</div>`;
 
@@ -122,7 +114,6 @@
         return card;
     }
 
-    // Open watch page (uses IFrame API)
     function openWatchPage(videoId, title, channel, thumbnail) {
         currentVideoId = videoId;
         relatedVideos = [];
@@ -148,7 +139,6 @@
             </div>
         `;
 
-        // Create player when API ready
         function createPlayer() {
             if (player) player.destroy();
             player = new YT.Player('playerContainer', {
@@ -188,7 +178,6 @@
         console.error('Player error:', event.data);
     }
 
-    // Load video details (description + stats)
     async function loadVideoDetails(videoId) {
         const descEl = document.getElementById('videoDescription');
         const statsEl = document.getElementById('videoStats');
@@ -209,7 +198,6 @@
         }
     }
 
-    // Load related videos
     async function loadRelatedVideos(videoId) {
         const sidebarEl = document.getElementById('watchSidebar');
         if (!sidebarEl) return;
@@ -228,10 +216,8 @@
                             currentVideoId = video.id;
                             loadVideoDetails(video.id);
                             loadRelatedVideos(video.id);
-                            // Update title and channel display
                             document.querySelector('.yt-watch-title').textContent = video.title;
                             document.querySelector('.yt-watch-channel-name').textContent = video.channel;
-                            // Update channel avatar
                             const avatarDiv = document.querySelector('.yt-watch-channel .yt-channel-avatar');
                             if (avatarDiv) avatarDiv.textContent = video.channel.charAt(0).toUpperCase();
                         }
@@ -248,7 +234,6 @@
         }
     }
 
-    // Show grid view (home)
     function showGridView() {
         mainContent.innerHTML = `
             <div class="yt-chip-bar" id="chipBar">
@@ -266,7 +251,6 @@
         isGridView = true;
     }
 
-    // Keyboard shortcut: press 'i' to go home
     document.addEventListener('keydown', (e) => {
         if (document.activeElement === searchInput) return;
         if (e.key === 'i' && !e.ctrlKey && !e.metaKey) {
@@ -276,6 +260,5 @@
         }
     });
 
-    // Initial load
     loadVideos('trending music');
 })();
