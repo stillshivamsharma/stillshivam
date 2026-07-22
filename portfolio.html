@@ -35,21 +35,20 @@
             display: none; border: 2px solid rgba(220,150,170,0.5); border-radius: 24px;
             overflow: hidden; margin-top: 0.5rem;
         }
-        .preview-container img {
-            width: 100%; display: block;
-        }
+        .preview-container img { width: 100%; display: block; }
         .preview-error {
             color: #7a2e3b; background: rgba(255,225,225,0.7); border-radius: 24px;
             padding: 1rem; text-align: center; display: none;
         }
-        .preview-note {
-            font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;
-        }
+        .preview-note { font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem; }
         .red-badge { color: #d63447; border-color: rgba(220,80,100,0.4); background: rgba(255,220,225,0.5); }
         .loading-text { text-align: center; color: var(--text-muted); display: none; }
-        
+
+        /* Redesigned Project Buttons */
         .project-tile-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             text-decoration: none;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -57,38 +56,67 @@
             -webkit-backdrop-filter: blur(14px);
             border-radius: 48px;
             box-shadow: var(--shadow);
-            padding: 2rem 2.5rem;
-            text-align: center;
-            transition: all 0.4s ease;
+            padding: 1.8rem 2.5rem;
             margin-top: 1.5rem;
-            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .project-tile-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,182,193,0.2) 0%, rgba(221,160,221,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
         .project-tile-btn:hover {
-            background: var(--card-hover);
             border-color: #f4bacc;
-            transform: translateY(-4px);
-            box-shadow: 0 25px 40px rgba(190,120,140,.15), 0 0 30px rgba(255,180,200,.2);
+            transform: translateY(-5px);
+            box-shadow: 0 25px 40px rgba(190,120,140,.2), 0 0 40px rgba(255,180,200,.25);
         }
-        .project-tile-btn h3 {
+        .project-tile-btn:hover::before { opacity: 1; }
+        .project-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(145deg, #fad1dd, #f7bacb);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+            box-shadow: 0 8px 20px rgba(210,130,150,.3);
+        }
+        .project-info { flex: 1; }
+        .project-info h3 {
             font-family: var(--font-serif);
             font-weight: 500;
             font-size: 2rem;
             color: #4d2c3b;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
-        .project-tile-btn p {
-            font-size: 1.1rem;
+        .project-info p {
+            font-size: 1rem;
             color: var(--text-soft);
+            margin-bottom: 0;
         }
-        .project-tile-btn .arrow {
-            display: inline-block;
-            margin-top: 0.8rem;
-            font-size: 1.5rem;
+        .project-arrow {
+            font-size: 1.8rem;
             color: #e894a8;
             transition: transform 0.3s;
         }
-        .project-tile-btn:hover .arrow {
+        .project-tile-btn:hover .project-arrow {
             transform: translateX(8px);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .project-tile-btn {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+            .project-icon { width: 48px; height: 48px; font-size: 1.5rem; }
+            .project-info h3 { font-size: 1.6rem; }
+            .project-arrow { display: none; }
         }
     </style>
 </head>
@@ -154,16 +182,22 @@
 
             <!-- DJ Mixer Tile -->
             <a href="dj-mixer.html" class="project-tile-btn">
-                <h3>🎧 DJ Mixer Pro</h3>
-                <p>Crossfade between two YouTube tracks. Search, load & mix — simple and fun.</p>
-                <span class="arrow">→</span>
+                <div class="project-icon">🎧</div>
+                <div class="project-info">
+                    <h3>DJ Mixer Pro</h3>
+                    <p>Crossfade between two YouTube tracks. Search, load & mix — simple and fun.</p>
+                </div>
+                <span class="project-arrow">→</span>
             </a>
 
             <!-- YouTube Clone Tile -->
             <a href="youtube.html" class="project-tile-btn">
-                <h3>▶️ YouTube Clone</h3>
-                <p>Ad‑free YouTube experience with dark theme, search & watch.</p>
-                <span class="arrow">→</span>
+                <div class="project-icon">▶️</div>
+                <div class="project-info">
+                    <h3>YouTube Clone</h3>
+                    <p>Ad‑free YouTube experience with dark theme, search & watch.</p>
+                </div>
+                <span class="project-arrow">→</span>
             </a>
         </div>
     </section>
