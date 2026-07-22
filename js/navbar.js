@@ -1,16 +1,13 @@
-// js/navbar.js
 (function () {
     const nav = document.getElementById('navbar');
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('navLinks');
     if (!nav) return;
 
-    // Scroll effect
     window.addEventListener('scroll', () => {
         nav.classList.toggle('scrolled', window.scrollY > 30);
     }, { passive: true });
 
-    // Mobile hamburger
     if (hamburger && navLinks) {
         hamburger.addEventListener('click', (e) => {
             e.stopPropagation();
