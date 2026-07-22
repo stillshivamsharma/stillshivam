@@ -4,19 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Clone · Shivam</title>
-    <link rel="stylesheet" href="css/youtube.css">
+    <meta name="description" content="YouTube Clone - Dark theme, search, watch videos.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/youtube.css">
 </head>
 <body>
+
     <!-- NAVBAR -->
-    <nav class="yt-nav">
+    <nav class="yt-nav" id="navbar">
         <div class="yt-nav-left">
             <button class="yt-icon-btn" id="menuBtn" aria-label="Menu">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
             </button>
             <a href="youtube.html" class="yt-logo">
                 <svg viewBox="0 0 90 20" width="90" height="20">
-                    <path d="M27.97 4.12v3.86h.01c.07-.61.28-1.08.62-1.41.35-.33.8-.5 1.37-.5.57 0 1.03.17 1.37.5.35.33.55.8.62 1.41h.01V4.12h1.54v7.69h-1.69V7.94c0-.86-.31-1.29-.94-1.29-.29 0-.53.1-.72.3-.19.2-.29.5-.29.89v3.97h-1.69l-.01-7.69zM39.12 11.91c-.39 0-.71-.1-.97-.3s-.44-.49-.53-.86h-.01v3.69h-1.68V7.93h1.55v.96h.01c.11-.37.3-.66.57-.86.27-.2.6-.3 1.01-.3.47 0 .85.16 1.14.47.29.31.44.75.44 1.31v1.09c0 .56-.15 1-.44 1.31-.29.31-.67.47-1.14.47zm-.22-1.36c.28 0 .49-.09.64-.28.15-.18.22-.45.22-.8v-.71c0-.35-.07-.62-.22-.8-.15-.18-.36-.28-.64-.28-.26 0-.48.1-.64.28-.16.18-.24.45-.24.8v.71c0 .35.08.62.24.8.16.18.38.28.64.28zM44.7 7.93h1.69v7.69h-1.69zM49.62 4.12h1.69v7.69h-1.69zM54.09 7.93h1.55v.92h.01c.12-.35.3-.62.55-.83.25-.21.54-.31.88-.31.46 0 .8.16 1.01.47.22.31.32.76.32 1.35v3.58h-1.69V9.87c0-.78-.29-1.17-.87-1.17-.28 0-.5.1-.67.3-.17.2-.25.5-.25.91v2.53h-1.69l.01-4.51h-.84V7.93zM64.49 11.91c-.39 0-.71-.1-.97-.3-.26-.2-.44-.49-.53-.86h-.01v3.69h-1.68V7.93h1.55v.96h.01c.12-.37.31-.66.57-.86.27-.2.6-.3 1.01-.3.47 0 .85.16 1.14.47.29.31.44.75.44 1.31v1.09c0 .56-.15 1-.44 1.31-.29.31-.67.47-1.14.47zm-.22-1.36c.28 0 .49-.09.64-.28.15-.18.22-.45.22-.8v-.71c0-.35-.07-.62-.22-.8-.15-.18-.36-.28-.64-.28-.26 0-.48.1-.64.28-.16.18-.24.45-.24.8v.71c0 .35.08.62.24.8.16.18.38.28.64.28zM68.11 11.81c-.33 0-.58-.1-.75-.29-.18-.19-.27-.5-.27-.91v-.12h4.12v-.24c0-.57-.14-1-.43-1.3-.29-.3-.71-.44-1.27-.44-.55 0-1.01.17-1.37.5-.36.33-.54.78-.54 1.35v.97c0 .57.18 1.02.54 1.34.36.33.83.49 1.41.49.41 0 .78-.09 1.11-.27.33-.18.57-.46.72-.83l-1.33-.62c-.07.2-.21.35-.42.43-.21.09-.44.13-.7.13zm1.52-2.9h-2.47c.03-.29.11-.51.26-.65.14-.14.35-.21.63-.21.25 0 .46.07.62.21.17.14.26.36.3.65h.66zM74.29 4.12v7.69h-1.69V4.12zM77.36 4.12h1.69v7.69h-1.69zM80.44 4.12h1.69v7.69h-1.69z" fill="#fff"/>
+                    <path d="M27.97 4.12v3.86h.01c.07-.61.28-1.08.62-1.41.35-.33.8-.5 1.37-.5.57 0 1.03.17 1.37.5.35.33.55.8.62 1.41h.01V4.12h1.54v7.69h-1.69V7.94c0-.86-.31-1.29-.94-1.29-.29 0-.53.1-.72.3-.19.2-.29.5-.29.89v3.97h-1.69l-.01-7.69zM39.12 11.91c-.39 0-.71-.1-.97-.3s-.44-.49-.53-.86h-.01v3.69h-1.68V7.93h1.55v.96h.01c.11-.37.3-.66.57-.86.27-.2.6-.3 1.01-.3.47 0 .85.16 1.14.47.29.31.44.75.44 1.31v1.09c0 .56-.15 1-.44 1.31-.29.31-.67.47-1.14.47zm-.22-1.36c.28 0 .49-.09.64-.28.15-.18.22-.45.22-.8v-.71c0-.35-.07-.62-.22-.8-.15-.18-.36-.28-.64-.28-.26 0-.48.1-.64.28-.16.18-.24.45-.24.8v.71c0 .35.08.62.24.8.16.18.38.28.64.28zM44.7 7.93h1.69v7.69h-1.69zM49.62 4.12h1.69v7.69h-1.69zM54.09 7.93h1.55v.92h.01c.12-.35.3-.62.55-.83.25-.21.54-.31.88-.31.46 0 .8.16 1.01.47.22.31.32.76.32 1.35v3.58h-1.69V9.87c0-.78-.29-1.17-.87-1.17-.28 0-.5.1-.67.3-.17.2-.25.5-.25.91v2.53h-1.69l.01-4.51h-.84V7.93zM64.49 11.91c-.39 0-.71-.1-.97-.3-.26-.2-.44-.49-.53-.86h-.01v3.69h-1.68V7.93h1.55v.96h.01c.12-.37.31-.66.57-.86.27-.2.6-.3 1.01-.3.47 0 .85.16 1.14.47.29.31.44.75.44 1.31v1.09c0 .56-.15 1-.44 1.31-.29.31-.67.47-1.14.47zm-.22-1.36c.28 0 .49-.09.64-.28.15-.18.22-.45.22-.8v-.71c0-.35-.07-.62-.22-.8-.15-.18-.36-.28-.64-.28-.26 0-.48.1-.64.28-.16.18-.24.45-.24.8v.71c0 .35.08.62.24.8.16.18.38.28.64.28zM68.11 11.81c-.33 0-.58-.1-.75-.29-.18-.19-.27-.5-.27-.91v-.12h4.12v-.24c0-.57-.14-1-.43-1.3-.29-.3-.71-.44-1.27-.44-.55 0-1.01.17-1.37.5-.36.33-.54.78-.54 1.35v.97c0 .57.18 1.02.54 1.34.36.33.83.49 1.41.49.41 0 .78-.09 1.11-.27.33-.18.57-.46.72-.83l-1.33-.62c-.07.2-.21.35-.42.43-.21.09-.44.13-.7.13zm1.52-2.9h-2.47c.03-.29.11-.51.26-.65.14-.14.35-.21.63-.21.25 0 .46.07.62.21.17.14.26.36.3.65h.66zM74.29 4.12v7.69h-1.69V4.12zM77.36 4.12h1.69v7.69h-1.69zM80.44 4.12h1.69v7.69h-1.69z" fill="currentColor"/>
                     <g fill="red"><path d="M14.16 10.08l-3.37-1.94v3.89l3.37-1.95z"/><path d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zm0 18.57c-4.73 0-8.57-3.84-8.57-8.57S5.27 1.43 10 1.43 18.57 5.27 18.57 10 14.73 18.57 10 18.57z"/></g>
                 </svg>
             </a>
@@ -29,15 +33,15 @@
                 </button>
             </div>
             <button class="yt-icon-btn yt-mic-btn" aria-label="Voice search">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M18.063 14.5a1 1 0 111.73 1A8.998 8.998 0 0113 19.942V22a1 1 0 11-2 0v-2.058A8.999 8.999 0 014.206 15.5l.866-.5.865-.5a7.002 7.002 0 0012.125 0ZM12 1a5 5 0 015 5v5a5 5 0 01-10 0V6a5 5 0 015-5Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M18.063 14.5a1 1 0 111.73 1A8.998 8.998 0 0113 19.942V22a1 1 0 11-2 0v-2.058A8.999 8.999 0 014.206 15.5l.866-.5.865-.5a7.002 7.002 0 0012.125 0ZM12 1a5 5 0 015 5v5a5 5 0 01-10 0V6a5 5 0 015-5Z"/></svg>
             </button>
         </div>
         <div class="yt-nav-right">
-            <button class="yt-icon-btn yt-create-btn" aria-label="Create">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 3a1 1 0 00-1 1v7H4a1 1 0 000 2h7v7a1 1 0 002 0v-7h7a1 1 0 000-2h-7V4a1 1 0 00-1-1Z"/></svg>
+            <button class="yt-icon-btn" aria-label="Create">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 3a1 1 0 00-1 1v7H4a1 1 0 000 2h7v7a1 1 0 002 0v-7h7a1 1 0 000-2h-7V4a1 1 0 00-1-1Z"/></svg>
             </button>
             <button class="yt-icon-btn" aria-label="Notifications">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M16 19a4 4 0 11-8 0H4.765C3.21 19 2.25 17.304 3.05 15.97l1.806-3.01A1 1 0 005 12.446V8a7 7 0 0114 0v4.446c0 .181.05.36.142.515l1.807 3.01c.8 1.333-.161 3.029-1.716 3.029H16ZM12 3a5 5 0 00-5 5v4.446a3 3 0 01-.428 1.543L4.765 17h14.468l-1.805-3.01A3 3 0 0117 12.445V8a5 5 0 00-5-5Zm-2 16a2 2 0 104 0h-4Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16 19a4 4 0 11-8 0H4.765C3.21 19 2.25 17.304 3.05 15.97l1.806-3.01A1 1 0 005 12.446V8a7 7 0 0114 0v4.446c0 .181.05.36.142.515l1.807 3.01c.8 1.333-.161 3.029-1.716 3.029H16ZM12 3a5 5 0 00-5 5v4.446a3 3 0 01-.428 1.543L4.765 17h14.468l-1.805-3.01A3 3 0 0117 12.445V8a5 5 0 00-5-5Zm-2 16a2 2 0 104 0h-4Z"/></svg>
             </button>
             <button class="yt-avatar-btn" aria-label="Account">
                 <img src="https://via.placeholder.com/32" alt="avatar" width="32" height="32" class="yt-avatar">
@@ -49,40 +53,57 @@
     <aside class="yt-sidebar" id="sidebar">
         <div class="yt-sidebar-section">
             <a href="youtube.html" class="yt-sidebar-item active">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="m11.485 2.143-8 4.8-2 1.2a1 1 0 001.03 1.714L3 9.567V20a2 2 0 002 2h5v-8h4v8h5a2 2 0 002-2V9.567l.485.29a1 1 0 001.03-1.714l-2-1.2-8-4.8a1 1 0 00-1.03 0Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="m11.485 2.143-8 4.8-2 1.2a1 1 0 001.03 1.714L3 9.567V20a2 2 0 002 2h5v-8h4v8h5a2 2 0 002-2V9.567l.485.29a1 1 0 001.03-1.714l-2-1.2-8-4.8a1 1 0 00-1.03 0Z"/></svg>
                 <span>Home</span>
             </a>
             <a href="#" class="yt-sidebar-item">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="m13.467 1.19-8 4.7a5 5 0 00-.255 8.46 5 5 0 005.32 8.462l8-4.7a5 5 0 00.258-8.462 5 5 0 001.641-6.464l-.12-.217a5 5 0 00-6.844-1.78m5.12 2.79a2.999 2.999 0 01-1.067 4.107l-1.327.78a1 1 0 00.096 1.775l.943.423a3 3 0 01.288 5.323l-8 4.7a3 3 0 01-3.039-5.173l1.327-.78a1 1 0 00-.097-1.775l-.942-.423a3 3 0 01-.288-5.323l8-4.7a3 3 0 014.106 1.066ZM15 12l-5-3v6l5-3Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="m13.467 1.19-8 4.7a5 5 0 00-.255 8.46 5 5 0 005.32 8.462l8-4.7a5 5 0 00.258-8.462 5 5 0 001.641-6.464l-.12-.217a5 5 0 00-6.844-1.78m5.12 2.79a2.999 2.999 0 01-1.067 4.107l-1.327.78a1 1 0 00.096 1.775l.943.423a3 3 0 01.288 5.323l-8 4.7a3 3 0 01-3.039-5.173l1.327-.78a1 1 0 00-.097-1.775l-.942-.423a3 3 0 01-.288-5.323l8-4.7a3 3 0 014.106 1.066ZM15 12l-5-3v6l5-3Z"/></svg>
                 <span>Shorts</span>
             </a>
             <a href="#" class="yt-sidebar-item">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M18 1H6a2 2 0 00-2 2h16a2 2 0 00-2-2Zm3 4H3a2 2 0 00-2 2v13a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2ZM3 20V7h18v13H3Zm13-6.5L10 10v7l6-3.5Z"/></svg>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M18 1H6a2 2 0 00-2 2h16a2 2 0 00-2-2Zm3 4H3a2 2 0 00-2 2v13a2 2 0 002 2h18a2 2 0 002-2V7a2 2 0 00-2-2ZM3 20V7h18v13H3Zm13-6.5L10 10v7l6-3.5Z"/></svg>
                 <span>Subscriptions</span>
             </a>
         </div>
         <div class="yt-sidebar-section">
             <h3 class="yt-sidebar-title">You</h3>
             <a href="#" class="yt-sidebar-item">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1Zm0 2a9 9 0 016.447 15.276 7 7 0 00-12.895 0A9 9 0 0112 3Zm0 2a4 4 0 100 8 4 4 0 000-8Zm0 2a2 2 0 110 4 2 2 0 010-4Zm-.1 9.001L11.899 16a5 5 0 014.904 3.61A8.96 8.96 0 0112 21a8.96 8.96 0 01-4.804-1.391 5 5 0 014.704-3.608Z"/></svg>
-                <span>Your channel</span>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1Zm0 2a9 9 0 016.447 15.276 7 7 0 00-12.895 0A9 9 0 0112 3Zm0 2a4 4 0 100 8 4 4 0 000-8Zm0 2a2 2 0 110 4 2 2 0 010-4Zm-.1 9.001L11.899 16a5 5 0 014.904 3.61A8.96 8.96 0 0112 21a8.96 8.96 0 01-4.804-1.391 5 5 0 014.704-3.608Z"/></svg>
+                <span>History</span>
             </a>
             <a href="#" class="yt-sidebar-item">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="#fff"><path d="M8.76 1.487a11 11 0 11-7.54 12.706 1 1 0 011.96-.4 9 9 0 0014.254 5.38A9 9 0 0016.79 4.38 9 9 0 004.518 7H7a1 1 0 010 2H1V3a1 1 0 012 0v2.678a11 11 0 015.76-4.192ZM12 6a1 1 0 00-1 1v5.58l.504.288 3.5 2a1 1 0 10.992-1.736L13 11.42V7a1 1 0 00-1-1Z"/></svg>
-                <span>History</span>
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2a1 1 0 00-1 1v11.586l-4.293-4.293a1 1 0 10-1.414 1.414L12 18.414l6.707-6.707a1 1 0 10-1.414-1.414L13 14.586V3a1 1 0 00-1-1Zm7 18H5a1 1 0 000 2h14a1 1 0 000-2Z"/></svg>
+                <span>Downloads</span>
+            </a>
+        </div>
+        <div class="yt-sidebar-section">
+            <h3 class="yt-sidebar-title">Explore</h3>
+            <a href="#" class="yt-sidebar-item">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M11 2.766v10.99a4.5 4.5 0 101.994 3.976L13 17.5V9.2l5.485 3.292A1 1 0 0020 11.634V6.966a1 1 0 00-.485-.857l-7-4.2A1 1 0 0011 2.766Zm2 4.102V4.533l5 3v2.335l-5-3ZM8.5 15a2.5 2.5 0 110 5.001A2.5 2.5 0 018.5 15Z"/></svg>
+                <span>Music</span>
+            </a>
+            <a href="#" class="yt-sidebar-item">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M20 3H4a3 3 0 00-2.587 1.485l-.001.003-.01.015-.072.133-.037.077a3.046 3.046 0 00-.264.869l-.002.011-.011.1-.005.063-.005.06A3.004 3.004 0 001 6v12a3 3 0 003 3h16a3 3 0 003-3V6a3 3 0 00-3-3ZM4 5h1.986l2 2-2 2H3v-.686L4.313 7 3.04 5.725A1 1 0 014 5Zm13.315 2-2-2h3.67l2 2-2 2h-3.67l2-2Zm-6.5 0L8.814 5h3.672l2 2-2 2H8.815l2-2ZM3 18v-7h18v7a1 1 0 01-1 1H4a1 1 0 01-1-1Z"/></svg>
+                <span>Movies & TV</span>
             </a>
         </div>
     </aside>
 
     <!-- MAIN CONTENT -->
     <main class="yt-main" id="mainContent">
-        <div class="yt-grid" id="videoGrid">
-            <!-- Video cards will be loaded via JS -->
+        <div class="yt-chip-bar" id="chipBar">
+            <button class="yt-chip active">All</button>
+            <button class="yt-chip">Music</button>
+            <button class="yt-chip">Live</button>
+            <button class="yt-chip">Gaming</button>
+            <button class="yt-chip">News</button>
+            <button class="yt-chip">Movies</button>
+            <button class="yt-chip">Fashion</button>
+            <button class="yt-chip">Learning</button>
         </div>
+        <div class="yt-grid" id="videoGrid"></div>
     </main>
 
     <script src="js/youtube.js"></script>
-    <!-- Load YouTube IFrame API for player control -->
-    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
