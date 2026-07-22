@@ -1,22 +1,21 @@
-// ==================== YOUTUBE CLONE JS ====================
+// ==================== YOUTUBE CLONE JS (FIXED) ====================
 (function() {
     'use strict';
 
-    // API Base URL
     const API_BASE = '/api/yt-search';
     const DETAILS_API = '/api/video-details';
 
-    // DOM Elements
     const mainContent = document.getElementById('mainContent');
     const sidebar = document.getElementById('sidebar');
     const menuBtn = document.getElementById('menuBtn');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
-    const chipBar = document.getElementById('chipBar');
 
-    // State
     let isGridView = true;
     let currentQuery = 'trending music';
+    let player = null;           // YouTube Player instance
+    let relatedVideos = [];      // store related video IDs
+    let currentVideoId = null;
 
     // ==================== SIDEBAR TOGGLE ====================
     menuBtn.addEventListener('click', () => {
@@ -31,7 +30,6 @@
         currentQuery = query;
         showGridView();
         loadVideos(query);
-        // Update active chip
         document.querySelectorAll('.yt-chip').forEach(c => c.classList.remove('active'));
     }
 
@@ -40,24 +38,26 @@
         if (e.key === 'Enter') performSearch();
     });
 
-    // ==================== CHIP BAR ====================
-    chipBar.addEventListener('click', (e) => {
-        if (e.target.classList.contains('yt-chip')) {
-            document.querySelectorAll('.yt-chip').forEach(c => c.classList.remove('active'));
-            e.target.classList.add('active');
-            const category = e.target.textContent.trim();
-            currentQuery = category === 'All' ? 'trending music' : category;
-            showGridView();
-            loadVideos(currentQuery);
-        }
-    });
+    // ==================== CHIP BAR (re-attached in showGridView) ====================
+    function attachChipEvents() {
+        const chipBar = document.getElementById('chipBar');
+        if (!chipBar) return;
+        chipBar.addEventListener('click', (e) => {
+            if (e.target.classList.contains('yt-chip')) {
+                document.querySelectorAll('.yt-chip').forEach(c => c.classList.remove('active'));
+                e.target.classList.add('active');
+                const category = e.target.textContent.trim();
+                currentQuery = category === 'All' ? 'trending music' : category;
+                loadVideos(currentQuery);
+            }
+        });
+    }
 
-    // ==================== LOAD VIDEOS ====================
+    // ==================== LOAD VIDEOS (GRID) ====================
     async function loadVideos(query) {
         const grid = document.getElementById('videoGrid');
         if (!grid) return;
         grid.innerHTML = '<div style="color:#aaa;padding:20px;text-align:center;">Loading...</div>';
-
         try {
             const res = await fetch(`${API_BASE}?action=search&query=${encodeURIComponent(query)}&maxResults=24&category=10`);
             const data = await res.json();
@@ -71,7 +71,6 @@
         }
     }
 
-    // ==================== RENDER VIDEO GRID ====================
     function renderVideoGrid(videos, grid) {
         grid.innerHTML = '';
         videos.forEach(video => {
@@ -96,7 +95,7 @@
                 ${durationHTML}
             </div>
             <div class="yt-video-info">
-                ${!compact ? `<div class="yt-channel-avatar"><img src="https://via.placeholder.com/36" alt="" loading="lazy"></div>` : ''}
+                ${!compact ? '<div class="yt-channel-avatar"><img src="https://via.placeholder.com/36" alt="" loading="lazy"></div>' : ''}
                 <div class="yt-video-details">
                     <div class="yt-video-title">${escapeHTML(video.title)}</div>
                     <div class="yt-channel-name">${escapeHTML(video.channel)}</div>
@@ -107,16 +106,15 @@
         return card;
     }
 
-    // ==================== WATCH PAGE ====================
-    async function openWatchPage(videoId, title, channel, thumbnail) {
+    // ==================== WATCH PAGE (rewritten for IFrame API) ====================
+    function openWatchPage(videoId, title, channel, thumbnail) {
+        currentVideoId = videoId;
+        relatedVideos = [];
+
         mainContent.innerHTML = `
             <div class="yt-watch-container">
                 <div class="yt-watch-main">
-                    <div class="yt-watch-player">
-                        <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1"
-                            allowfullscreen allow="autoplay; encrypted-media">
-                        </iframe>
-                    </div>
+                    <div class="yt-watch-player" id="playerContainer"></div>
                     <div class="yt-watch-title">${escapeHTML(title)}</div>
                     <div class="yt-watch-channel">
                         <img src="https://via.placeholder.com/40" alt="">
@@ -134,10 +132,47 @@
             </div>
         `;
 
-        // Load video details
+        // Create YouTube Player using IFrame API
+        if (player) {
+            player.destroy();
+        }
+        player = new YT.Player('playerContainer', {
+            videoId: videoId,
+            playerVars: {
+                autoplay: 1,
+                rel: 0,
+                enablejsapi: 1,
+                controls: 1,
+                modestbranding: 0,    // full YouTube look
+                origin: window.location.origin
+            },
+            events: {
+                'onStateChange': onPlayerStateChange,
+                'onError': onPlayerError
+            }
+        });
+
         loadVideoDetails(videoId);
-        // Load related videos
         loadRelatedVideos(videoId);
+    }
+
+    // ==================== PLAYER STATE CHANGE (autoplay next) ====================
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.ENDED && relatedVideos.length > 0) {
+            // Play next related video
+            const nextVideo = relatedVideos.shift();
+            if (nextVideo && player && player.loadVideoById) {
+                player.loadVideoById(nextVideo.id);
+                currentVideoId = nextVideo.id;
+                loadVideoDetails(nextVideo.id);
+                // Reload related for the new video
+                loadRelatedVideos(nextVideo.id);
+            }
+        }
+    }
+
+    function onPlayerError(event) {
+        console.error('Player error:', event.data);
     }
 
     // ==================== LOAD VIDEO DETAILS ====================
@@ -147,11 +182,7 @@
         try {
             const res = await fetch(`${DETAILS_API}?id=${videoId}`);
             const data = await res.json();
-            if (data.description) {
-                descEl.textContent = data.description;
-            } else {
-                descEl.textContent = 'No description available.';
-            }
+            descEl.textContent = data.description || 'No description available.';
         } catch (e) {
             descEl.textContent = 'Failed to load description.';
         }
@@ -161,21 +192,37 @@
     async function loadRelatedVideos(videoId) {
         const sidebarEl = document.getElementById('watchSidebar');
         if (!sidebarEl) return;
+        sidebarEl.innerHTML = '<div style="color:#aaa;padding:20px;">Loading related...</div>';
         try {
             const res = await fetch(`${API_BASE}?action=related&relatedTo=${videoId}&maxResults=12`);
             const data = await res.json();
             if (data.videos && data.videos.length > 0) {
+                relatedVideos = data.videos;   // store for autoplay
                 sidebarEl.innerHTML = '';
                 data.videos.forEach(video => {
                     const card = createVideoCard(video, true);
-                    card.addEventListener('click', () => openWatchPage(video.id, video.title, video.channel, video.thumbnail));
+                    card.addEventListener('click', () => {
+                        // Play this video in the same player
+                        if (player && player.loadVideoById) {
+                            player.loadVideoById(video.id);
+                            currentVideoId = video.id;
+                            loadVideoDetails(video.id);
+                            // Reload related for this video
+                            loadRelatedVideos(video.id);
+                            // Update title and channel in the watch page (optional)
+                            document.querySelector('.yt-watch-title').textContent = video.title;
+                            document.querySelector('.yt-watch-channel-name').textContent = video.channel;
+                        }
+                    });
                     sidebarEl.appendChild(card);
                 });
             } else {
-                sidebarEl.innerHTML = '<div style="color:#aaa;padding:20px;">No related videos</div>';
+                sidebarEl.innerHTML = '<div style="color:#aaa;padding:20px;">No related videos found</div>';
+                relatedVideos = [];
             }
         } catch (e) {
             sidebarEl.innerHTML = '<div style="color:#aaa;padding:20px;">Failed to load related videos</div>';
+            relatedVideos = [];
         }
     }
 
@@ -193,19 +240,7 @@
             </div>
             <div class="yt-grid" id="videoGrid"></div>
         `;
-        // Re-attach chip bar listener
-        const newChipBar = document.getElementById('chipBar');
-        if (newChipBar) {
-            newChipBar.addEventListener('click', (e) => {
-                if (e.target.classList.contains('yt-chip')) {
-                    document.querySelectorAll('.yt-chip').forEach(c => c.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const category = e.target.textContent.trim();
-                    currentQuery = category === 'All' ? 'trending music' : category;
-                    loadVideos(currentQuery);
-                }
-            });
-        }
+        attachChipEvents();
         isGridView = true;
     }
 
@@ -229,5 +264,4 @@
 
     // ==================== INITIAL LOAD ====================
     loadVideos('trending music');
-
 })();
