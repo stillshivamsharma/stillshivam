@@ -1,9 +1,10 @@
-(function() {
+// js/main.js
+(function () {
     const body = document.body;
 
     // Page transitions
     document.querySelectorAll('a.internal-link, a:not([target="_blank"]):not([href^="#"]):not([href^="http"])').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (!href || href.startsWith('#') || this.getAttribute('target') === '_blank') return;
             e.preventDefault();
@@ -11,29 +12,6 @@
             setTimeout(() => { window.location = href; }, 400);
         });
     });
-
-    // Mobile nav
-    const hamburger = document.getElementById('hamburger');
-    const navLinks = document.getElementById('navLinks');
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            hamburger.classList.toggle('active');
-            navLinks.classList.toggle('show');
-        });
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('show');
-            });
-        });
-        document.addEventListener('click', function(e) {
-            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-                hamburger.classList.remove('active');
-                navLinks.classList.remove('show');
-            }
-        });
-    }
 
     // Floating clouds
     const fl = document.getElementById('floatLayer');
@@ -65,44 +43,84 @@
     const progressBar = document.getElementById('scrollProgress');
     window.addEventListener('scroll', () => {
         progressBar.style.width = Math.min(100, Math.max(0, (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100)) + '%';
-    }, {passive: true});
-    const nav = document.getElementById('navbar');
-    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 50), {passive: true});
+    }, { passive: true });
 
     // Reveal on scroll
     const revealObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
-    }, {threshold: 0.1});
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // Smooth scroll
+    // Smooth scroll for nav anchor links
     document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', function (e) {
             e.preventDefault();
             const target = document.getElementById(this.getAttribute('href').substring(1));
-            if (target) target.scrollIntoView({behavior: 'smooth'});
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
         });
     });
 
-    // Collab form (modified to handle dynamic action)
+    // Dark Mode Toggle
+    const darkToggle = document.getElementById('darkModeToggle');
+    if (darkToggle) {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            darkToggle.textContent = '☀️';
+        }
+        darkToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            darkToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+    }
+
+    // Collab form (dynamic action, now with sessionStorage cache)
     const collabForm = document.getElementById('collabForm');
     if (collabForm) {
         const formMessage = document.getElementById('formMessage');
-        collabForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            // Ensure action is set (might still be empty if fetch hasn't completed, but good to check)
+
+        // Load Formspree endpoint with caching
+        async function loadFormAction() {
             if (!collabForm.action || collabForm.action === window.location.href) {
-                formMessage.style.display = 'block';
-                formMessage.style.background = 'rgba(255, 225, 225, 0.7)';
-                formMessage.style.color = '#7a2e3b';
-                formMessage.textContent = 'Form endpoint not configured. Please set FORMSPREE_ENDPOINT env var.';
-                return;
+                let endpoint = sessionStorage.getItem('formspree_endpoint');
+                if (!endpoint) {
+                    try {
+                        const res = await fetch('/api/form-action');
+                        const data = await res.json();
+                        endpoint = data.endpoint || '';
+                        sessionStorage.setItem('formspree_endpoint', endpoint);
+                    } catch (e) {
+                        console.error('Form endpoint fetch failed', e);
+                    }
+                }
+                if (endpoint) collabForm.action = endpoint;
+            }
+        }
+        loadFormAction();
+
+        collabForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            if (!collabForm.action || collabForm.action === window.location.href) {
+                await loadFormAction();
+                if (!collabForm.action) {
+                    formMessage.style.display = 'block';
+                    formMessage.style.background = 'rgba(255, 225, 225, 0.7)';
+                    formMessage.style.color = '#7a2e3b';
+                    formMessage.textContent = 'Form endpoint not configured.';
+                    return;
+                }
             }
             const submitBtn = collabForm.querySelector('.btn-submit');
             submitBtn.textContent = 'sending...'; submitBtn.disabled = true;
             formMessage.style.display = 'none';
             try {
-                const response = await fetch(collabForm.action, { method: 'POST', body: new FormData(collabForm), headers: { 'Accept': 'application/json' } });
+                const response = await fetch(collabForm.action, {
+                    method: 'POST',
+                    body: new FormData(collabForm),
+                    headers: { 'Accept': 'application/json' }
+                });
                 if (response.ok) {
                     formMessage.style.display = 'block';
                     formMessage.style.background = 'rgba(210, 245, 210, 0.7)';
@@ -122,11 +140,11 @@
         });
     }
 
-    // Calculators + AI
+    // Calculators
     const dowryForm = document.getElementById('dowryForm');
     const alimonyForm = document.getElementById('alimonyForm');
     if (dowryForm && alimonyForm) {
-        dowryForm.addEventListener('submit', function(e) {
+        dowryForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const salary = parseFloat(document.getElementById('dSalary').value) || 0;
             const height = parseFloat(document.getElementById('dHeight').value) || 160;
@@ -151,7 +169,7 @@
             window.dowryData = { salary, height, skin, education, location, vehicle, horoscope, dowry, formatted };
         });
 
-        alimonyForm.addEventListener('submit', function(e) {
+        alimonyForm.addEventListener('submit', function (e) {
             e.preventDefault();
             const years = parseFloat(document.getElementById('aYears').value) || 0;
             const husbandIncome = parseFloat(document.getElementById('aHusbandIncome').value) || 0;
@@ -199,51 +217,58 @@
         const chatArea = document.getElementById('chatArea');
         const generalInput = document.getElementById('generalAiInput');
         const generalSend = document.getElementById('generalAiSend');
+        if (chatArea && generalInput && generalSend) {
+            let userScrolledUp = false;
 
-        function addMessage(text, sender) {
-            const bubble = document.createElement('div');
-            bubble.className = 'chat-bubble ' + sender;
-            if (sender === 'ai') {
-                const avatar = document.createElement('img');
-                avatar.src = 'images/dadaji_aipfp.png';
-                avatar.alt = 'Dada Ji'; avatar.className = 'ai-avatar';
-                const contentDiv = document.createElement('div');
-                contentDiv.style.flex = '1';
-                const header = document.createElement('div');
-                header.className = 'ai-header'; header.textContent = 'Dada Ji 🥸';
-                const textSpan = document.createElement('span');
-                textSpan.textContent = text;
-                contentDiv.appendChild(header);
-                contentDiv.appendChild(textSpan);
-                bubble.appendChild(avatar);
-                bubble.appendChild(contentDiv);
-            } else {
-                bubble.textContent = text;
+            chatArea.addEventListener('scroll', () => {
+                userScrolledUp = chatArea.scrollTop + chatArea.clientHeight < chatArea.scrollHeight - 10;
+            });
+
+            function addMessage(text, sender) {
+                const bubble = document.createElement('div');
+                bubble.className = 'chat-bubble ' + sender;
+                if (sender === 'ai') {
+                    const avatar = document.createElement('img');
+                    avatar.src = 'images/dadaji_aipfp.png';
+                    avatar.alt = 'Dada Ji'; avatar.className = 'ai-avatar';
+                    const contentDiv = document.createElement('div');
+                    contentDiv.style.flex = '1';
+                    const header = document.createElement('div');
+                    header.className = 'ai-header'; header.textContent = 'Dada Ji 🥸';
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = text;
+                    contentDiv.appendChild(header);
+                    contentDiv.appendChild(textSpan);
+                    bubble.appendChild(avatar);
+                    bubble.appendChild(contentDiv);
+                } else {
+                    bubble.textContent = text;
+                }
+                chatArea.appendChild(bubble);
+                if (!userScrolledUp) chatArea.scrollTop = chatArea.scrollHeight;
             }
-            chatArea.appendChild(bubble);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
 
-        async function sendGeneralMessage() {
-            const message = generalInput.value.trim();
-            if (!message) return;
-            addMessage(message, 'user'); generalInput.value = '';
-            addMessage('🥸 Soch raha hoon beta...', 'ai');
-            try {
-                const response = await fetch('/api/advisor', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ type: 'general', message })
-                });
-                const json = await response.json();
-                chatArea.lastChild.remove();
-                addMessage(json.analysis || '🥸 Beta, samajh nahi aaya.', 'ai');
-            } catch (error) {
-                chatArea.lastChild.remove();
-                addMessage('☁️ Dada Ji so gaye.', 'ai');
+            async function sendGeneralMessage() {
+                const message = generalInput.value.trim();
+                if (!message) return;
+                addMessage(message, 'user'); generalInput.value = '';
+                addMessage('🥸 Soch raha hoon beta...', 'ai');
+                try {
+                    const response = await fetch('/api/advisor', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type: 'general', message })
+                    });
+                    const json = await response.json();
+                    chatArea.lastChild.remove();
+                    addMessage(json.analysis || '🥸 Beta, samajh nahi aaya.', 'ai');
+                } catch (error) {
+                    chatArea.lastChild.remove();
+                    addMessage('☁️ Dada Ji so gaye.', 'ai');
+                }
             }
-        }
 
-        generalSend.addEventListener('click', sendGeneralMessage);
-        generalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendGeneralMessage(); });
+            generalSend.addEventListener('click', sendGeneralMessage);
+            generalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendGeneralMessage(); });
+        }
     }
 })();
