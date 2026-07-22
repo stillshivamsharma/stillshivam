@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shivam · portfolio</title>
     <meta name="description" content="Shivam Sharma's portfolio – fun calculators, Dada Ji AI advisor, DJ Mixer, YouTube Clone and safe link inspector.">
+    <meta property="og:title" content="Shivam · portfolio">
+    <meta property="og:description" content="Fun calculators, Dada Ji AI advisor, DJ Mixer, YouTube Clone.">
+    <meta property="og:image" content="https://yourdomain.com/images/preview.png">
+    <meta property="og:url" content="https://yourdomain.com/portfolio.html">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -28,7 +34,10 @@
             font-weight: 500; color: #442433; letter-spacing: 1px;
             cursor: pointer; transition: all .3s; font-family: var(--font-serif);
         }
-        .link-inspector .inspect-btn:hover {
+        .link-inspector .inspect-btn:disabled {
+            opacity: 0.6; cursor: not-allowed;
+        }
+        .link-inspector .inspect-btn:hover:not(:disabled) {
             background: linear-gradient(145deg,#fadce6,#f8c0d2); transform: scale(1.02);
         }
         .preview-container {
@@ -44,7 +53,6 @@
         .red-badge { color: #d63447; border-color: rgba(220,80,100,0.4); background: rgba(255,220,225,0.5); }
         .loading-text { text-align: center; color: var(--text-muted); display: none; }
 
-        /* Redesigned Project Buttons */
         .project-tile-btn {
             display: flex;
             align-items: center;
@@ -107,7 +115,14 @@
             transform: translateX(8px);
         }
 
-        /* Responsive */
+        .yt-channel-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: #3f3f3f; flex-shrink: 0; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 1rem;
+            text-transform: uppercase;
+        }
+
         @media (max-width: 640px) {
             .project-tile-btn {
                 flex-direction: column;
@@ -136,6 +151,7 @@
             </ul>
             <div class="nav-right">
                 <a href="index.html" class="portfolio-link internal-link mobile-portfolio">Main Site</a>
+                <button id="darkModeToggle" class="nav-icon-btn" aria-label="Toggle dark mode" style="background:none;border:none;font-size:1.4rem;cursor:pointer;margin-right:8px;">🌙</button>
                 <button class="hamburger" id="hamburger" aria-label="Menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -153,12 +169,10 @@
         </div>
     </section>
 
-    <!-- TOP PROJECTS -->
     <section id="top-projects" style="padding-top:10px;padding-bottom:60px;">
         <div class="container reveal">
             <span class="section-badge red-badge" style="font-weight:600;">TOP PROJECTS</span>
             
-            <!-- Link Inspector -->
             <div class="glass-card">
                 <h2 style="font-size:2rem;color:#d63447;">🔍 Link Inspector</h2>
                 <p class="about-text" style="margin-bottom:1.5rem;color:var(--text-soft);">
@@ -180,7 +194,6 @@
                 </div>
             </div>
 
-            <!-- DJ Mixer Tile -->
             <a href="dj-mixer.html" class="project-tile-btn">
                 <div class="project-icon">🎧</div>
                 <div class="project-info">
@@ -190,7 +203,6 @@
                 <span class="project-arrow">→</span>
             </a>
 
-            <!-- YouTube Clone Tile -->
             <a href="youtube.html" class="project-tile-btn">
                 <div class="project-icon">▶️</div>
                 <div class="project-info">
@@ -202,7 +214,6 @@
         </div>
     </section>
 
-    <!-- Calculators -->
     <section id="calculators" style="padding-top:20px;padding-bottom:60px;">
         <div class="container reveal">
             <span class="section-badge">dowry &amp; alimony calculators</span>
@@ -258,7 +269,6 @@
         </div>
     </section>
 
-    <!-- Dada Ji AI Chat -->
     <section id="general-ai" style="padding-top:0;padding-bottom:80px;">
         <div class="container reveal">
             <span class="section-badge">Ask Dada Ji 🥸</span>
@@ -278,9 +288,11 @@
         <p style="margin-top:1rem;font-size:0.8rem;color:var(--text-muted);">— with tenderness, <strong>Shivam</strong> —</p>
     </footer>
 
+    <script src="js/utils.js"></script>
+    <script src="js/navbar.js"></script>
     <script src="js/main.js"></script>
     <script>
-        // Link Inspector with ScreenshotOne key from API
+        // Link Inspector with disabled button until key loads
         (function() {
             const urlInput = document.getElementById('inspectUrl');
             const inspectBtn = document.getElementById('inspectBtn');
@@ -290,38 +302,26 @@
             const loadingText = document.getElementById('loadingText');
 
             let screenshotOneKey = null;
+            inspectBtn.disabled = true;
 
             async function loadKey() {
                 try {
                     const res = await fetch('/api/screenshot-key');
                     const data = await res.json();
                     screenshotOneKey = data.key;
+                    inspectBtn.disabled = false;
                 } catch (e) {
                     console.error('Failed to load ScreenshotOne key', e);
                 }
             }
             loadKey();
 
-            function resetView() {
-                previewContainer.style.display = 'none';
-                previewError.style.display = 'none';
-                loadingText.style.display = 'none';
-                previewImage.src = '';
-                previewImage.onload = null;
-                previewImage.onerror = null;
-            }
-
             function showScreenshot(url) {
-                if (!screenshotOneKey) {
-                    alert('API key is still loading, please wait a moment.');
-                    return;
-                }
+                if (!screenshotOneKey) return;
                 resetView();
                 loadingText.style.display = 'block';
-
                 const screenshotUrl = 'https://api.screenshotone.com/take?access_key=' + screenshotOneKey + '&url=' + encodeURIComponent(url) + '&format=png';
                 previewImage.src = screenshotUrl;
-
                 previewImage.onload = function() {
                     loadingText.style.display = 'none';
                     previewContainer.style.display = 'block';
@@ -351,6 +351,15 @@
             urlInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') inspectBtn.click();
             });
+
+            function resetView() {
+                previewContainer.style.display = 'none';
+                previewError.style.display = 'none';
+                loadingText.style.display = 'none';
+                previewImage.src = '';
+                previewImage.onload = null;
+                previewImage.onerror = null;
+            }
         })();
     </script>
 </body>
