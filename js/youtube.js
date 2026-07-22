@@ -1,12 +1,16 @@
-// YouTube Clone - JS Logic
+// YouTube Clone - JS Logic (Fixed)
 (function() {
     const API_BASE = '/api/yt-search';
-    const videoGrid = document.getElementById('videoGrid');
     const mainContent = document.getElementById('mainContent');
     const sidebar = document.getElementById('sidebar');
     const menuBtn = document.getElementById('menuBtn');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
+
+    // Get current videoGrid element (safe after DOM changes)
+    function getVideoGrid() {
+        return document.getElementById('videoGrid');
+    }
 
     // Sidebar toggle
     menuBtn.addEventListener('click', () => {
@@ -28,42 +32,48 @@
     // Load trending videos on homepage
     async function loadTrending() {
         showGrid();
-        videoGrid.innerHTML = '<div class="yt-video-card"><p>Loading...</p></div>';
+        const grid = getVideoGrid();
+        if (!grid) return;
+        grid.innerHTML = '<div class="yt-video-card"><p>Loading...</p></div>';
         try {
             const res = await fetch(`${API_BASE}?action=search&query=trending&maxResults=20&category=10`);
             const data = await res.json();
             if (data.videos && data.videos.length > 0) {
-                renderVideoGrid(data.videos);
+                renderVideoGrid(data.videos, grid);
+            } else {
+                grid.innerHTML = '<p>No trending videos found.</p>';
             }
         } catch (e) {
-            videoGrid.innerHTML = '<p>Failed to load videos.</p>';
+            grid.innerHTML = '<p>Failed to load videos.</p>';
         }
     }
 
     // Load videos for a search query
     async function loadVideos(query) {
         showGrid();
-        videoGrid.innerHTML = '<div class="yt-video-card"><p>Loading...</p></div>';
+        const grid = getVideoGrid();
+        if (!grid) return;
+        grid.innerHTML = '<div class="yt-video-card"><p>Loading...</p></div>';
         try {
             const res = await fetch(`${API_BASE}?action=search&query=${encodeURIComponent(query)}&maxResults=20&category=10`);
             const data = await res.json();
             if (data.videos && data.videos.length > 0) {
-                renderVideoGrid(data.videos);
+                renderVideoGrid(data.videos, grid);
             } else {
-                videoGrid.innerHTML = '<p>No results found.</p>';
+                grid.innerHTML = '<p>No results found.</p>';
             }
         } catch (e) {
-            videoGrid.innerHTML = '<p>Search failed.</p>';
+            grid.innerHTML = '<p>Search failed.</p>';
         }
     }
 
     // Render video grid
-    function renderVideoGrid(videos) {
-        videoGrid.innerHTML = '';
+    function renderVideoGrid(videos, grid) {
+        grid.innerHTML = '';
         videos.forEach(video => {
             const card = createVideoCard(video);
             card.addEventListener('click', () => openWatchPage(video.id));
-            videoGrid.appendChild(card);
+            grid.appendChild(card);
         });
     }
 
@@ -105,6 +115,7 @@
     // Load related videos for watch sidebar
     async function loadRelatedVideos(videoId) {
         const sidebar = document.getElementById('watchSidebar');
+        if (!sidebar) return;
         try {
             const res = await fetch(`${API_BASE}?action=related&relatedTo=${videoId}&maxResults=10`);
             const data = await res.json();
@@ -126,8 +137,6 @@
     // Show grid (clear watch page)
     function showGrid() {
         mainContent.innerHTML = '<div class="yt-grid" id="videoGrid"></div>';
-        // Reassign videoGrid reference because innerHTML destroyed the old one
-        window.videoGrid = document.getElementById('videoGrid');
     }
 
     // Helper escape HTML
