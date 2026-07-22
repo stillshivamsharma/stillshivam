@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Clone · Shivam</title>
     <meta name="description" content="YouTube Clone - Dark theme, search, watch videos.">
+    <meta property="og:title" content="YouTube Clone · Shivam">
+    <meta property="og:description" content="Ad‑free YouTube experience with dark theme.">
+    <meta property="og:image" content="https://yourdomain.com/images/preview.png">
+    <meta property="og:url" content="https://yourdomain.com/youtube.html">
+    <meta name="twitter:card" content="summary_large_image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -12,7 +18,6 @@
 </head>
 <body>
 
-    <!-- NAVBAR -->
     <nav class="yt-nav" id="navbar">
         <div class="yt-nav-left">
             <button class="yt-icon-btn" id="menuBtn" aria-label="Menu">
@@ -49,7 +54,6 @@
         </div>
     </nav>
 
-    <!-- SIDEBAR -->
     <aside class="yt-sidebar" id="sidebar">
         <div class="yt-sidebar-section">
             <a href="youtube.html" class="yt-sidebar-item active">
@@ -89,7 +93,6 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="yt-main" id="mainContent">
         <div class="yt-chip-bar" id="chipBar">
             <button class="yt-chip active">All</button>
@@ -98,14 +101,13 @@
             <button class="yt-chip">Gaming</button>
             <button class="yt-chip">News</button>
             <button class="yt-chip">Movies</button>
-            <button class="yt-chip">Fashion</button>
             <button class="yt-chip">Learning</button>
         </div>
         <div class="yt-grid" id="videoGrid"></div>
     </main>
 
-    <!-- YouTube IFrame API (loaded before our JS) -->
     <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="js/utils.js"></script>
     <script src="js/youtube.js"></script>
 </body>
 </html>
