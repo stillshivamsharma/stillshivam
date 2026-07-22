@@ -1,4 +1,3 @@
-// js/main.js
 (function () {
     const body = document.body;
 
@@ -76,12 +75,11 @@
         });
     }
 
-    // Collab form (dynamic action, now with sessionStorage cache)
+    // Collab form (dynamic action with sessionStorage)
     const collabForm = document.getElementById('collabForm');
     if (collabForm) {
         const formMessage = document.getElementById('formMessage');
 
-        // Load Formspree endpoint with caching
         async function loadFormAction() {
             if (!collabForm.action || collabForm.action === window.location.href) {
                 let endpoint = sessionStorage.getItem('formspree_endpoint');
