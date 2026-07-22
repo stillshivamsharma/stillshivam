@@ -1,24 +1,26 @@
-// YouTube Clone - JS Logic (Fixed)
 (function() {
     const API_BASE = '/api/yt-search';
+    const DETAILS_API = '/api/video-details';
     const mainContent = document.getElementById('mainContent');
     const sidebar = document.getElementById('sidebar');
     const menuBtn = document.getElementById('menuBtn');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
 
-    // Get current videoGrid element (safe after DOM changes)
+    let player = null;
+    let currentVideoId = null;
+
     function getVideoGrid() {
         return document.getElementById('videoGrid');
     }
 
-    // Sidebar toggle
+    // ---- Sidebar toggle ----
     menuBtn.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
         mainContent.classList.toggle('full-width');
     });
 
-    // Search functionality
+    // ---- Search ----
     function performSearch() {
         const query = searchInput.value.trim();
         if (!query) return;
@@ -29,7 +31,7 @@
         if (e.key === 'Enter') performSearch();
     });
 
-    // Load trending videos on homepage
+    // ---- Load trending ----
     async function loadTrending() {
         showGrid();
         const grid = getVideoGrid();
@@ -38,7 +40,7 @@
         try {
             const res = await fetch(`${API_BASE}?action=search&query=trending&maxResults=20&category=10`);
             const data = await res.json();
-            if (data.videos && data.videos.length > 0) {
+            if (data.videos && data.videos.length) {
                 renderVideoGrid(data.videos, grid);
             } else {
                 grid.innerHTML = '<p>No trending videos found.</p>';
@@ -48,7 +50,6 @@
         }
     }
 
-    // Load videos for a search query
     async function loadVideos(query) {
         showGrid();
         const grid = getVideoGrid();
@@ -57,7 +58,7 @@
         try {
             const res = await fetch(`${API_BASE}?action=search&query=${encodeURIComponent(query)}&maxResults=20&category=10`);
             const data = await res.json();
-            if (data.videos && data.videos.length > 0) {
+            if (data.videos && data.videos.length) {
                 renderVideoGrid(data.videos, grid);
             } else {
                 grid.innerHTML = '<p>No results found.</p>';
@@ -67,7 +68,6 @@
         }
     }
 
-    // Render video grid
     function renderVideoGrid(videos, grid) {
         grid.innerHTML = '';
         videos.forEach(video => {
@@ -77,7 +77,6 @@
         });
     }
 
-    // Create a video card element
     function createVideoCard(video) {
         const card = document.createElement('div');
         card.className = 'yt-video-card';
@@ -97,49 +96,140 @@
         return card;
     }
 
-    // Open watch page with embed player
-    function openWatchPage(videoId) {
+    // ---- Watch Page ----
+    async function openWatchPage(videoId) {
+        currentVideoId = videoId;
         mainContent.innerHTML = `
             <div class="yt-watch">
-                <div class="yt-watch-player">
-                    <iframe src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" allowfullscreen></iframe>
+                <div class="yt-watch-main">
+                    <div class="yt-watch-player-container" id="playerContainer"></div>
+                    <div class="yt-video-details" id="videoDetails">Loading...</div>
                 </div>
                 <div class="yt-watch-sidebar" id="watchSidebar">
                     <p>Loading related...</p>
                 </div>
             </div>
         `;
+
+        // Load YouTube player
+        if (player) player.destroy();
+        player = new YT.Player('playerContainer', {
+            videoId: videoId,
+            playerVars: {
+                autoplay: 0,
+                controls: 1,
+                modestbranding: 1,
+                rel: 0,
+                enablejsapi: 1
+            },
+            events: {
+                onReady: () => {}
+            }
+        });
+
+        // Fetch video details
+        loadVideoDetails(videoId);
+        // Fetch related videos
         loadRelatedVideos(videoId);
     }
 
-    // Load related videos for watch sidebar
-    async function loadRelatedVideos(videoId) {
-        const sidebar = document.getElementById('watchSidebar');
-        if (!sidebar) return;
+    async function loadVideoDetails(videoId) {
+        const container = document.getElementById('videoDetails');
+        if (!container) return;
         try {
-            const res = await fetch(`${API_BASE}?action=related&relatedTo=${videoId}&maxResults=10`);
+            const res = await fetch(`${DETAILS_API}?id=${videoId}`);
             const data = await res.json();
-            if (data.videos && data.videos.length > 0) {
-                sidebar.innerHTML = '';
-                data.videos.forEach(video => {
-                    const card = createVideoCard(video);
-                    card.addEventListener('click', () => openWatchPage(video.id));
-                    sidebar.appendChild(card);
-                });
-            } else {
-                sidebar.innerHTML = '<p>No related videos.</p>';
+            if (data.error) {
+                container.innerHTML = '<p>Could not load details.</p>';
+                return;
             }
+            const title = data.title || 'Unknown';
+            const channel = data.channel || 'Unknown';
+            const description = data.description || 'No description';
+            const views = data.views || '0';
+            container.innerHTML = `
+                <h1>${escapeHTML(title)}</h1>
+                <div class="yt-video-meta-row">
+                    <div class="yt-channel-info">
+                        <img src="https://via.placeholder.com/40" alt="channel">
+                        <div>
+                            <div class="yt-channel-name">${escapeHTML(channel)}</div>
+                            <div class="yt-video-meta">${views} views</div>
+                        </div>
+                    </div>
+                    <button class="yt-sub-btn">Subscribe</button>
+                </div>
+                <div class="yt-video-description">${escapeHTML(description)}</div>
+            `;
         } catch (e) {
-            sidebar.innerHTML = '<p>Failed to load related.</p>';
+            container.innerHTML = '<p>Failed to load details.</p>';
         }
     }
 
-    // Show grid (clear watch page)
+    async function loadRelatedVideos(videoId) {
+        const sidebarEl = document.getElementById('watchSidebar');
+        if (!sidebarEl) return;
+        try {
+            const res = await fetch(`${API_BASE}?action=related&relatedTo=${videoId}&maxResults=10`);
+            const data = await res.json();
+            if (data.videos && data.videos.length) {
+                sidebarEl.innerHTML = '';
+                data.videos.forEach(video => {
+                    const card = createVideoCard(video);
+                    card.addEventListener('click', () => openWatchPage(video.id));
+                    sidebarEl.appendChild(card);
+                });
+            } else {
+                sidebarEl.innerHTML = '<p>No related videos.</p>';
+            }
+        } catch (e) {
+            sidebarEl.innerHTML = '<p>Failed to load related.</p>';
+        }
+    }
+
     function showGrid() {
         mainContent.innerHTML = '<div class="yt-grid" id="videoGrid"></div>';
     }
 
-    // Helper escape HTML
+    // ---- Keyboard Shortcuts ----
+    document.addEventListener('keydown', (e) => {
+        // Ignore if typing in search
+        if (document.activeElement === searchInput) return;
+        if (!player || typeof player.getPlayerState !== 'function') return;
+
+        switch (e.key) {
+            case ' ':
+                e.preventDefault();
+                if (player.getPlayerState() === 1) player.pauseVideo();
+                else player.playVideo();
+                break;
+            case 'm':
+                if (player.isMuted()) player.unMute();
+                else player.mute();
+                break;
+            case 'f':
+                // fullscreen via player element
+                const iframe = player.getIframe();
+                if (iframe) {
+                    if (iframe.requestFullscreen) iframe.requestFullscreen();
+                    else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+                }
+                break;
+            case 'i':
+                // go back to home (trending)
+                loadTrending();
+                break;
+            case 'ArrowLeft':
+                e.preventDefault();
+                player.seekTo(player.getCurrentTime() - 5, true);
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                player.seekTo(player.getCurrentTime() + 5, true);
+                break;
+        }
+    });
+
     function escapeHTML(str) {
         const div = document.createElement('div');
         div.textContent = str;
